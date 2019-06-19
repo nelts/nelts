@@ -1,0 +1,14 @@
+{
+  "name": "@nelts/abc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node node_modules/@nelts/process/dist/runtime.js --script=src/index --base=test --max=1"
+  },
+  "author": "cevio",
+  "license": "MIT",
+  "dependencies": {
+    "@nelts/process": "^1.0.5"
+  }
+}
