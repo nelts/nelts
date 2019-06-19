@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const emitter = require("events");
-class Plugin extends emitter.EventEmitter {
+const events_1 = require("./helper/events");
+class Plugin extends events_1.default {
     constructor(app, name, cwd) {
         super();
         this._app = app;
@@ -14,7 +14,6 @@ class Plugin extends emitter.EventEmitter {
             : path.resolve(cwd, 'dist');
         this._env = app.env;
         this._components = [];
-        this.setMaxListeners(Infinity);
     }
     get service() {
         return this._service;

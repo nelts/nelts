@@ -5,6 +5,7 @@ import PluginRender from '../helper/plugin-render';
 import Compiler from '../compiler';
 import * as Router from 'find-my-way';
 import { Component, Processer } from '@nelts/process';
+import { NELTS_CONFIGS } from '../export';
 
 import BootstrapCompiler from './compilers/bootstrap';
 import ControllerCompiler from './compilers/controller';
@@ -17,6 +18,7 @@ export default class DemoComponent extends Component {
   private _plugins: PLUGINS;
   private _app: Plugin;
   private _port: number;
+  private _configs: NELTS_CONFIGS;
   public compiler: Compiler;
   public server: http.Server;
   public render: (path: string) => Promise<Plugin>;
@@ -26,6 +28,14 @@ export default class DemoComponent extends Component {
     super(processer, args);
     this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
     this._env = args.env;
+
+    if (args.config) {
+      try{
+        const configExport: NELTS_CONFIGS = require(path.resolve(this._base, args.config));
+        this._configs = configExport.default || configExport;
+      }catch(e){}
+    }
+
     this._plugins = {};
     this._port = Number(args.port || 8080);
     this.compiler = new Compiler();
@@ -57,6 +67,7 @@ export default class DemoComponent extends Component {
   async componentWillCreate() {
     this.render = PluginRender(this, true);
     this._app = await this.render(this.base);
+    if (this._configs) this._app.render(this._configs);
     this.compiler.addCompiler(ControllerCompiler);
     this.compiler.addCompiler(BootstrapCompiler);
     this.server = http.createServer((req, res) => this.router.lookup(req, res));

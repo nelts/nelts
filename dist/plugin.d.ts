@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import Component from './worker/index';
-import * as emitter from 'events';
-export default class Plugin extends emitter.EventEmitter {
+import EventEmitter from './helper/events';
+export default class Plugin extends EventEmitter {
     private _name;
     private _cwd;
     private _app;

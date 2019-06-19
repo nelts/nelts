@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --script=src/index --base=test --max=1",
+    "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --script=src/index --base=test --max=1 --config=configs.json",
     "build": "rm -rf dist/ && tsc -d"
   },
   "author": "cevio",

@@ -30,10 +30,10 @@ export default class Context {
     this.res = res;
     this.request = new Request(this, req);
     this.response = new Response(this, res);
-    this.params = params || {};
+    this.params = Object.freeze(params || {});
     this.state = new Map();
     this.cookies = new Cookies(this.req, this.res, {
-      keys: ['aaa'],
+      keys: app.configs.cookie || ['nelts', 'context'],
       secure: this.request.secure,
     });
   }

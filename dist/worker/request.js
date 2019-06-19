@@ -9,7 +9,7 @@ class Request {
         this.ctx = ctx;
         this.req = req;
         this.search = parsed.search;
-        this.query = parsed.query;
+        this.query = Object.freeze(parsed.query || {});
         this.pathname = parsed.pathname;
         this.path = parsed.path;
         this.href = parsed.href;

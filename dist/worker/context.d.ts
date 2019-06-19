@@ -20,11 +20,17 @@ export default class Context {
     readonly request: Request;
     readonly response: Response;
     silent: boolean;
-    status: number;
     state: Record<any, any>;
+    respond: boolean;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
     get(field: string): string | string[];
     onerror(err: ContextError): void;
+    body: any;
+    status: number;
+    readonly method: string;
+    length: number;
+    message: any;
+    type: string;
 }
 export declare function ContextProxy(ctx: Context): Context;
 export {};

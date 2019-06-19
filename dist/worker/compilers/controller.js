@@ -4,6 +4,12 @@ require("reflect-metadata");
 const path = require("path");
 const globby_1 = require("globby");
 const context_1 = require("../context");
+const namespace_1 = require("../decorators/namespace");
+const Compose = require("koa-compose");
+const ajv_checker_1 = require("../../helper/ajv-checker");
+const statuses = require("statuses");
+const is_json_1 = require("../../helper/is-json");
+const Stream = require("stream");
 async function Controller(plugin) {
     const cwd = plugin.source;
     const files = await globby_1.default([
@@ -16,7 +22,7 @@ async function Controller(plugin) {
 exports.default = Controller;
 function render(plugin, file) {
     const fileExports = require(file).default;
-    const controllerPrefix = Reflect.getMetadata('Controller.Router.Prefix', fileExports) || '/';
+    const controllerPrefix = Reflect.getMetadata(namespace_1.default.CONTROLLER_PREFIX, fileExports) || '/';
     const controllerProperties = Object.getOwnPropertyNames(fileExports.prototype);
     const app = plugin.app;
     for (let i = 0; i < controllerProperties.length; i++) {
@@ -24,17 +30,119 @@ function render(plugin, file) {
         const target = fileExports.prototype[property];
         if (property === 'constructor')
             continue;
-        const paths = Reflect.getMetadata('Controller.Router.Path', target) || '/';
-        const methods = Reflect.getMetadata('Controller.Router.Method', target) || [];
+        const paths = Reflect.getMetadata(namespace_1.default.CONTROLLER_PATH, target) || '/';
+        const methods = Reflect.getMetadata(namespace_1.default.CONTROLLER_METHOD, target) || [];
         if (!methods.length)
             continue;
         const CurrentRouterPath = !paths.startsWith('/') ? '/' + paths : paths;
         const CurrentRouterPrefix = controllerPrefix.endsWith('/')
             ? controllerPrefix.substring(0, controllerPrefix.length - 1)
             : controllerPrefix;
+        const DECS = {
+            REQUEST_STATIC_VALIDATOR_HEADER: Reflect.getMetadata(namespace_1.default.CONTROLLER_STATIC_VALIDATOR_HEADER, target),
+            REQUEST_STATIC_VALIDATOR_QUERY: Reflect.getMetadata(namespace_1.default.CONTROLLER_STATIC_VALIDATOR_QUERY, target),
+            REQUEST_STATIC_FILTER: Reflect.getMetadata(namespace_1.default.CONTROLLER_STATIC_FILTER, target),
+            REQUEST_DYNAMIC_LOADER: Reflect.getMetadata(namespace_1.default.CONTROLLER_DYNAMIC_LOADER, target),
+            REQUEST_DYNAMIC_VALIDATOR_BODY: Reflect.getMetadata(namespace_1.default.CONTROLLER_DYNAMIC_VALIDATOR_BODY, target),
+            REQUEST_DYNAMIC_VALIDATOR_FILE: Reflect.getMetadata(namespace_1.default.CONTROLLER_DYNAMIC_VALIDATOR_FILE, target),
+            REQUEST_DYNAMIC_FILTER: Reflect.getMetadata(namespace_1.default.CONTROLLER_DYNAMIC_FILTER, target),
+            REQUEST_GUARD: Reflect.getMetadata(namespace_1.default.CONTROLLER_GUARD, target),
+            MIDDLEWARE: Reflect.getMetadata(namespace_1.default.CONTROLLER_MIDDLEWARE, target),
+            RESPONSE: Reflect.getMetadata(namespace_1.default.CONTROLLER_RESPONSE, target),
+        };
         app.router.on(methods, CurrentRouterPrefix + CurrentRouterPath, (req, res, params) => {
             const ctx = context_1.ContextProxy(new context_1.default(plugin, req, res, params));
-            res.end('ok');
+            const fns = addComposeCallback(DECS, fileExports, property, plugin);
+            Compose(fns)(ctx).catch((e) => {
+                ctx.status = (e && e.status) || 500;
+                ctx.body = e.message;
+            }).then(() => respond(ctx));
         });
     }
+}
+function addComposeCallback(options, controller, property, plugin) {
+    const callbacks = [];
+    callbacks.push(async (ctx, next) => {
+        const staticValidators = [];
+        if (options.REQUEST_STATIC_VALIDATOR_HEADER)
+            staticValidators.push(ajv_checker_1.default(options.REQUEST_STATIC_VALIDATOR_HEADER, ctx.request.headers));
+        if (options.REQUEST_STATIC_VALIDATOR_QUERY)
+            staticValidators.push(ajv_checker_1.default(options.REQUEST_STATIC_VALIDATOR_QUERY, ctx.request.query));
+        await Promise.all(staticValidators);
+        await next();
+    });
+    if (options.REQUEST_STATIC_FILTER)
+        callbacks.push(...options.REQUEST_STATIC_FILTER);
+    if (options.REQUEST_DYNAMIC_LOADER) {
+        callbacks.push(...options.REQUEST_DYNAMIC_LOADER);
+        callbacks.push(async (ctx, next) => {
+            if (!ctx.request.body && !ctx.request.files)
+                throw new Error('miss body or files, please check `@Dynamic.Loader` is working all right?');
+            await next();
+        });
+    }
+    callbacks.push(async (ctx, next) => {
+        const dynamicValidators = [];
+        if (options.REQUEST_DYNAMIC_VALIDATOR_BODY)
+            dynamicValidators.push(ajv_checker_1.default(options.REQUEST_DYNAMIC_VALIDATOR_BODY, ctx.request.body));
+        if (options.REQUEST_DYNAMIC_VALIDATOR_FILE)
+            dynamicValidators.push(ajv_checker_1.default(options.REQUEST_DYNAMIC_VALIDATOR_FILE, ctx.request.files));
+        await Promise.all(dynamicValidators);
+        await next();
+    });
+    if (options.REQUEST_DYNAMIC_FILTER)
+        callbacks.push(...options.REQUEST_DYNAMIC_FILTER);
+    if (options.REQUEST_GUARD)
+        callbacks.push(...options.REQUEST_GUARD);
+    if (options.MIDDLEWARE)
+        callbacks.push(...options.MIDDLEWARE);
+    callbacks.push(async (ctx, next) => {
+        const object = new controller(plugin);
+        await object[property](ctx);
+        await next();
+    });
+    if (options.RESPONSE)
+        callbacks.push(...options.RESPONSE);
+    return callbacks;
+}
+function respond(ctx) {
+    if (false === ctx.respond)
+        return;
+    const res = ctx.res;
+    let body = ctx.body;
+    const code = ctx.status;
+    if (statuses.empty[code]) {
+        ctx.body = null;
+        return res.end();
+    }
+    if ('HEAD' == ctx.method) {
+        if (!res.headersSent && is_json_1.default(body)) {
+            ctx.length = Buffer.byteLength(JSON.stringify(body));
+        }
+        return res.end();
+    }
+    if (null == body) {
+        if (ctx.req.httpVersionMajor >= 2) {
+            body = String(code);
+        }
+        else {
+            body = ctx.message || String(code);
+        }
+        if (!res.headersSent) {
+            ctx.type = 'text';
+            ctx.length = Buffer.byteLength(body);
+        }
+        return res.end(body);
+    }
+    if (Buffer.isBuffer(body))
+        return res.end(body);
+    if ('string' == typeof body)
+        return res.end(body);
+    if (body instanceof Stream)
+        return body.pipe(res);
+    body = JSON.stringify(body);
+    if (!res.headersSent) {
+        ctx.length = Buffer.byteLength(body);
+    }
+    res.end(body);
 }

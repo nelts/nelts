@@ -11,7 +11,7 @@ class Context {
         this.res = res;
         this.request = new request_1.default(this, req);
         this.response = new response_1.default(this, res);
-        this.params = params || {};
+        this.params = Object.freeze(params || {});
         this.state = new Map();
         this.cookies = new Cookies(this.req, this.res, {
             keys: ['aaa'],
@@ -32,6 +32,39 @@ class Context {
         console.error();
         console.error(msg.replace(/^/gm, '  '));
         console.error();
+    }
+    get body() {
+        return this.response.body;
+    }
+    set body(value) {
+        this.response.body = value;
+    }
+    get status() {
+        return this.response.status;
+    }
+    set status(value) {
+        this.response.status = value;
+    }
+    get method() {
+        return this.req.method;
+    }
+    get length() {
+        return this.response.length;
+    }
+    set length(value) {
+        this.response.length = value;
+    }
+    get message() {
+        return this.response.message;
+    }
+    set message(value) {
+        this.response.message = value;
+    }
+    get type() {
+        return this.response.type;
+    }
+    set type(value) {
+        this.response.type = value;
     }
 }
 exports.default = Context;

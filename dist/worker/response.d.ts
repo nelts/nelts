@@ -20,7 +20,7 @@ export default class Response {
     readonly header: import("http").OutgoingHttpHeaders;
     readonly headers: import("http").OutgoingHttpHeaders;
     status: number;
-    message: string;
+    message: any;
     type: string;
     length: any;
     body: any;

@@ -1,8 +1,9 @@
 import * as path from 'path';
 import Component from './worker/index';
-import * as emitter from 'events';
+import EventEmitter from './helper/events';
+import { NELTS_CONFIGS } from './export';
 
-export default class Plugin extends emitter.EventEmitter {
+export default class Plugin extends EventEmitter {
   private _name: string;
   private _cwd: string;
   private _app: Component;
@@ -10,6 +11,7 @@ export default class Plugin extends emitter.EventEmitter {
   private _source: string;
   private _components: Array<string>;
   private _service: { [name: string]: any };
+  private _configs: NELTS_CONFIGS;
 
   constructor(app: Component, name: string, cwd: string) {
     super();
@@ -22,7 +24,10 @@ export default class Plugin extends emitter.EventEmitter {
       : path.resolve(cwd, 'dist');
     this._env = app.env;
     this._components = [];
-    this.setMaxListeners(Infinity);
+  }
+
+  get configs() {
+    return this._configs;
   }
 
   get service() {
@@ -69,5 +74,11 @@ export default class Plugin extends emitter.EventEmitter {
   getComponent(name: string) {
     if (this._components.indexOf(name) === -1) throw new Error(`${name} is not depended on ${this.name}`);
     return this._app.plugins[name];
+  }
+
+  render(configs: NELTS_CONFIGS) {
+    this._configs = typeof configs === 'object' 
+      ? Object.freeze(configs) 
+      : configs;
   }
 }
