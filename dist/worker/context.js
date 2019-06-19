@@ -14,7 +14,7 @@ class Context {
         this.params = Object.freeze(params || {});
         this.state = new Map();
         this.cookies = new Cookies(this.req, this.res, {
-            keys: ['aaa'],
+            keys: app.configs.cookie || ['nelts', 'context'],
             secure: this.request.secure,
         });
     }

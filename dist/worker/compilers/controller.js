@@ -21,7 +21,9 @@ async function Controller(plugin) {
 }
 exports.default = Controller;
 function render(plugin, file) {
-    const fileExports = require(file).default;
+    let fileExports = require(file).default;
+    if (fileExports.scoped)
+        fileExports = fileExports(plugin);
     const controllerPrefix = Reflect.getMetadata(namespace_1.default.CONTROLLER_PREFIX, fileExports) || '/';
     const controllerProperties = Object.getOwnPropertyNames(fileExports.prototype);
     const app = plugin.app;
@@ -55,7 +57,7 @@ function render(plugin, file) {
             const fns = addComposeCallback(DECS, fileExports, property, plugin);
             Compose(fns)(ctx).catch((e) => {
                 ctx.status = (e && e.status) || 500;
-                ctx.body = e.message;
+                ctx.body = `<html lang="en"><head><title>Internet Server Error: ${ctx.status}</title></head><body><h1>Internet server error: ${ctx.status}</h1><pre>${e.message}</pre></body></html>`;
             }).then(() => respond(ctx));
         });
     }
@@ -65,9 +67,9 @@ function addComposeCallback(options, controller, property, plugin) {
     callbacks.push(async (ctx, next) => {
         const staticValidators = [];
         if (options.REQUEST_STATIC_VALIDATOR_HEADER)
-            staticValidators.push(ajv_checker_1.default(options.REQUEST_STATIC_VALIDATOR_HEADER, ctx.request.headers));
+            staticValidators.push(ajv_checker_1.default(options.REQUEST_STATIC_VALIDATOR_HEADER, ctx.request.headers, 'Header'));
         if (options.REQUEST_STATIC_VALIDATOR_QUERY)
-            staticValidators.push(ajv_checker_1.default(options.REQUEST_STATIC_VALIDATOR_QUERY, ctx.request.query));
+            staticValidators.push(ajv_checker_1.default(options.REQUEST_STATIC_VALIDATOR_QUERY, ctx.request.query, 'Query'));
         await Promise.all(staticValidators);
         await next();
     });
@@ -84,9 +86,9 @@ function addComposeCallback(options, controller, property, plugin) {
     callbacks.push(async (ctx, next) => {
         const dynamicValidators = [];
         if (options.REQUEST_DYNAMIC_VALIDATOR_BODY)
-            dynamicValidators.push(ajv_checker_1.default(options.REQUEST_DYNAMIC_VALIDATOR_BODY, ctx.request.body));
+            dynamicValidators.push(ajv_checker_1.default(options.REQUEST_DYNAMIC_VALIDATOR_BODY, ctx.request.body, 'Body'));
         if (options.REQUEST_DYNAMIC_VALIDATOR_FILE)
-            dynamicValidators.push(ajv_checker_1.default(options.REQUEST_DYNAMIC_VALIDATOR_FILE, ctx.request.files));
+            dynamicValidators.push(ajv_checker_1.default(options.REQUEST_DYNAMIC_VALIDATOR_FILE, ctx.request.files, 'File'));
         await Promise.all(dynamicValidators);
         await next();
     });

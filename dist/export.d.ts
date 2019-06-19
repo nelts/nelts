@@ -19,6 +19,11 @@ import _decorator_middleware from './worker/decorators/middleware';
 import _decorator_response from './worker/decorators/response';
 import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
+import Scope from './scope';
+export interface NELTS_CONFIGS {
+    cookie?: string[];
+    [name: string]: any;
+}
 declare const Component: {
     Controller: typeof _component_controller;
 };
@@ -53,4 +58,4 @@ declare const Decorator: {
         Middleware: typeof _decorator_middleware;
     };
 };
-export { LRU, Plugin, Component, Decorator, AsyncEventEmitter, AsyncEventEmitterListener };
+export { LRU, Scope, Plugin, Component, Decorator, AsyncEventEmitter, AsyncEventEmitterListener };

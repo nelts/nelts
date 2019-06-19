@@ -13,6 +13,7 @@ export default class DemoComponent extends Component {
     private _plugins;
     private _app;
     private _port;
+    private _configs;
     compiler: Compiler;
     server: http.Server;
     render: (path: string) => Promise<Plugin>;

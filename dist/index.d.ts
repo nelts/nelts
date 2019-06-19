@@ -3,6 +3,7 @@ export * from './export';
 export default class Master extends Component {
     private _base;
     private _max;
+    private _config;
     private _forker;
     constructor(processer: Processer, args: {
         [name: string]: any;

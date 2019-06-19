@@ -15,6 +15,9 @@ class Plugin extends events_1.default {
         this._env = app.env;
         this._components = [];
     }
+    get configs() {
+        return this._configs;
+    }
     get service() {
         return this._service;
     }
@@ -51,6 +54,11 @@ class Plugin extends events_1.default {
         if (this._components.indexOf(name) === -1)
             throw new Error(`${name} is not depended on ${this.name}`);
         return this._app.plugins[name];
+    }
+    render(configs) {
+        this._configs = typeof configs === 'object'
+            ? Object.freeze(configs)
+            : configs;
     }
 }
 exports.default = Plugin;

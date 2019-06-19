@@ -24,6 +24,8 @@ const lru_1 = require("./helper/lru");
 exports.LRU = lru_1.default;
 const events_1 = require("./helper/events");
 exports.AsyncEventEmitter = events_1.default;
+const scope_1 = require("./scope");
+exports.Scope = scope_1.default;
 const Component = {
     Controller: controller_1.default
 };

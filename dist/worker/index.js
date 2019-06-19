@@ -13,6 +13,13 @@ class DemoComponent extends process_1.Component {
         super(processer, args);
         this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
         this._env = args.env;
+        if (args.config) {
+            try {
+                const configExport = require(path.resolve(this._base, args.config));
+                this._configs = configExport.default || configExport;
+            }
+            catch (e) { }
+        }
         this._plugins = {};
         this._port = Number(args.port || 8080);
         this.compiler = new compiler_1.default();
@@ -39,6 +46,8 @@ class DemoComponent extends process_1.Component {
     async componentWillCreate() {
         this.render = plugin_render_1.default(this, true);
         this._app = await this.render(this.base);
+        if (this._configs)
+            this._app.render(this._configs);
         this.compiler.addCompiler(controller_1.default);
         this.compiler.addCompiler(bootstrap_1.default);
         this.server = http.createServer((req, res) => this.router.lookup(req, res));
