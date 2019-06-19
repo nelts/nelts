@@ -4,8 +4,10 @@ const Cookies = require("cookies");
 const request_1 = require("./request");
 const response_1 = require("./response");
 const util = require("util");
-class Context {
+const events_1 = require("../helper/events");
+class Context extends events_1.default {
     constructor(app, req, res, params) {
+        super();
         this.app = app;
         this.req = req;
         this.res = res;

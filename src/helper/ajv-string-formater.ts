@@ -6,13 +6,6 @@
  *  - `?field`
  *  - `field[]`
  *  - `?field[]`
- * @example
- *  `Decorator.Controller.Request.Static.Validator.Query(
- *    '?test1', 
- *    'test2[]', 
- *    '?test3',
- *    '?test4[]'
- *  )`
  */
 export default function formater(args: object[] | string[]) {
   const result: any = { type: 'object', properties: {}, required: [] };

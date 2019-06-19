@@ -7,11 +7,12 @@ declare type ParamSchema = {
 };
 import Request from './request';
 import Response from './response';
+import AsyncEventEmitter from '../helper/events';
 export interface ContextError extends Error {
     status?: number;
     expose?: boolean;
 }
-export default class Context {
+export default class Context extends AsyncEventEmitter {
     readonly app: Plugin;
     readonly req: IncomingMessage;
     readonly res: ServerResponse;

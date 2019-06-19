@@ -9,7 +9,6 @@ function default_1(schema, data, type) {
 }
 exports.default = default_1;
 function formatAjvErrors(errors, type) {
-    const errorTexts = errors.map(error => `  - ${type} Validator [${error.keyword}]: ${error.dataPath}${error.schemaPath}: <i><font color="brown">${error.message}</font><i>.`);
-    errorTexts.unshift(`<font size="5">Nelts Validator Errors:</font>\n`);
+    const errorTexts = errors.map(error => `- ${type} Validator [${error.keyword}]: ${error.dataPath}${error.schemaPath}: ${error.message}`);
     return new Error(errorTexts.join('\n'));
 }

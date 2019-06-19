@@ -5,13 +5,14 @@ type ParamSchema = { [name: string]: string };
 import Request from './request';
 import Response from './response';
 import * as util from 'util';
+import AsyncEventEmitter from '../helper/events';
 
 export interface ContextError extends Error {
   status?: number,
   expose?: boolean
 }
 
-export default class Context {
+export default class Context extends AsyncEventEmitter {
 
   readonly app: Plugin;
   readonly req: IncomingMessage;
@@ -25,6 +26,7 @@ export default class Context {
   public respond: boolean;
 
   constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema) {
+    super();
     this.app = app;
     this.req = req;
     this.res = res;

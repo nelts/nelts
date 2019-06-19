@@ -56,6 +56,10 @@ function render(plugin, file) {
             const ctx = context_1.ContextProxy(new context_1.default(plugin, req, res, params));
             const fns = addComposeCallback(DECS, fileExports, property, plugin);
             Compose(fns)(ctx).catch((e) => {
+                if (ctx.listenerCount('error'))
+                    return ctx.emit('error', new Error(e.message));
+                if (ctx.app.listenerCount('error'))
+                    return ctx.app.emit('error', new Error(e.message), ctx);
                 ctx.status = (e && e.status) || 500;
                 ctx.body = `<html lang="en"><head><title>Internet Server Error: ${ctx.status}</title></head><body><h1>Internet server error: ${ctx.status}</h1><pre>${e.message}</pre></body></html>`;
             }).then(() => respond(ctx));
