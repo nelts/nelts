@@ -5,6 +5,7 @@ const events_1 = require("./helper/events");
 class Plugin extends events_1.default {
     constructor(app, name, cwd) {
         super();
+        this._middleware = {};
         this._app = app;
         this._name = name;
         this._cwd = cwd;
@@ -14,6 +15,9 @@ class Plugin extends events_1.default {
             : path.resolve(cwd, 'dist');
         this._env = app.env;
         this._components = [];
+    }
+    get middleware() {
+        return this._middleware;
     }
     get configs() {
         return this._configs;

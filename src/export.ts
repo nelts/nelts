@@ -20,6 +20,7 @@ import _decorator_response from './worker/decorators/response';
 import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
+import Context from './worker/context';
 
 export interface NELTS_CONFIGS {
   cookie?: string[],
@@ -66,6 +67,7 @@ export {
   LRU,
   Scope,
   Plugin,
+  Context,
   Component,
   Decorator,
   AsyncEventEmitter,

@@ -40,6 +40,18 @@ export default class Context extends AsyncEventEmitter {
     });
   }
 
+  get query() {
+    return this.request.query;
+  }
+
+  get header() {
+    return this.request.header;
+  }
+
+  get headers() {
+    return this.request.headers;
+  }
+
   get(field: string) {
     return this.request.get(field);
   }

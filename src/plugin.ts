@@ -2,6 +2,8 @@ import * as path from 'path';
 import Component from './worker/index';
 import EventEmitter from './helper/events';
 import { NELTS_CONFIGS } from './export';
+import * as Compose from  'koa-compose';
+import Context from './worker/context';
 
 export default class Plugin extends EventEmitter {
   private _name: string;
@@ -12,6 +14,7 @@ export default class Plugin extends EventEmitter {
   private _components: Array<string>;
   private _service: { [name: string]: any };
   private _configs: NELTS_CONFIGS;
+  private _middleware: { [name: string]: Compose.Middleware<Context> } = {};
 
   constructor(app: Component, name: string, cwd: string) {
     super();
@@ -24,6 +27,10 @@ export default class Plugin extends EventEmitter {
       : path.resolve(cwd, 'dist');
     this._env = app.env;
     this._components = [];
+  }
+
+  get middleware() {
+    return this._middleware;
   }
 
   get configs() {

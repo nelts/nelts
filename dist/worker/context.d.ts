@@ -24,6 +24,9 @@ export default class Context extends AsyncEventEmitter {
     state: Record<any, any>;
     respond: boolean;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
+    readonly query: import("./request").RequestQuerySchema;
+    readonly header: import("http").IncomingHttpHeaders;
+    readonly headers: import("http").IncomingHttpHeaders;
     get(field: string): string | string[];
     onerror(err: ContextError): void;
     body: any;

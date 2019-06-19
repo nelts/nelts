@@ -2,6 +2,8 @@
 import Component from './worker/index';
 import EventEmitter from './helper/events';
 import { NELTS_CONFIGS } from './export';
+import * as Compose from 'koa-compose';
+import Context from './worker/context';
 export default class Plugin extends EventEmitter {
     private _name;
     private _cwd;
@@ -11,7 +13,11 @@ export default class Plugin extends EventEmitter {
     private _components;
     private _service;
     private _configs;
+    private _middleware;
     constructor(app: Component, name: string, cwd: string);
+    readonly middleware: {
+        [name: string]: Compose.Middleware<Context>;
+    };
     readonly configs: NELTS_CONFIGS;
     readonly service: {
         [name: string]: any;

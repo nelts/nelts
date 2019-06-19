@@ -26,6 +26,8 @@ const events_1 = require("./helper/events");
 exports.AsyncEventEmitter = events_1.default;
 const scope_1 = require("./scope");
 exports.Scope = scope_1.default;
+const context_1 = require("./worker/context");
+exports.Context = context_1.default;
 const Component = {
     Controller: controller_1.default
 };

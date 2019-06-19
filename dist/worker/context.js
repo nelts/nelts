@@ -20,6 +20,15 @@ class Context extends events_1.default {
             secure: this.request.secure,
         });
     }
+    get query() {
+        return this.request.query;
+    }
+    get header() {
+        return this.request.header;
+    }
+    get headers() {
+        return this.request.headers;
+    }
     get(field) {
         return this.request.get(field);
     }
