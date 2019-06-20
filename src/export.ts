@@ -25,12 +25,10 @@ import Scope from './scope';
 import Context from './worker/context';
 
 export function Require(pather: string, cwd?: string) {
-  try{
-    const moduleExports = path.isAbsolute(pather) 
-      ? require(pather) 
-      : require(path.resolve(cwd || process.cwd(), pather));
-    return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
-  } catch(e) {}
+  const moduleExports = path.isAbsolute(pather) 
+    ? require(pather) 
+    : require(path.resolve(cwd || process.cwd(), pather));
+  return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
 }
 
 export interface NELTS_CONFIGS {
