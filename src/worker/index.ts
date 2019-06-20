@@ -5,14 +5,16 @@ import PluginRender from '../helper/plugin-render';
 import Compiler from '../compiler';
 import * as Router from 'find-my-way';
 import { Component, Processer } from '@nelts/process';
-import { NELTS_CONFIGS } from '../export';
+import { NELTS_CONFIGS, Require } from '../export';
 
 import BootstrapCompiler from './compilers/bootstrap';
 import ControllerCompiler from './compilers/controller';
+import MiddlewareCompiler from './compilers/middleware';
+import ServiceCompiler from './compilers/service';
 
 export type PLUGINS = { [name:string]: Plugin };
 
-export default class DemoComponent extends Component {
+export default class WorkerComponent extends Component {
   private _base: string;
   private _env: string;
   private _plugins: PLUGINS;
@@ -25,15 +27,13 @@ export default class DemoComponent extends Component {
   public router: Router.Instance<Router.HTTPVersion.V1>;
 
   constructor(processer: Processer, args: { [name:string]: any }) {
+    console.info(`  [pid:${process.pid}] server opening...`);
     super(processer, args);
     this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
     this._env = args.env;
 
     if (args.config) {
-      try{
-        const configExport: NELTS_CONFIGS = require(path.resolve(this._base, args.config));
-        this._configs = configExport.default || configExport;
-      }catch(e){}
+      this._configs = Require(args.config, this._base);
     }
 
     this._plugins = {};
@@ -67,7 +67,9 @@ export default class DemoComponent extends Component {
   async componentWillCreate() {
     this.render = PluginRender(this, true);
     this._app = await this.render(this.base);
-    if (this._configs) this._app.render(this._configs);
+    if (this._configs) this._app.props(this._configs);
+    this.compiler.addCompiler(MiddlewareCompiler);
+    this.compiler.addCompiler(ServiceCompiler);
     this.compiler.addCompiler(ControllerCompiler);
     this.compiler.addCompiler(BootstrapCompiler);
     this.server = http.createServer((req, res) => this.router.lookup(req, res));
@@ -79,18 +81,21 @@ export default class DemoComponent extends Component {
       this.server.listen(this._port, (err?: Error) => {
         if (err) return reject(err);
         resolve();
-        console.log('server start at http://127.0.0.1:' + this._port);
       });
     });
+    await this._app.callLife('open');
+    console.info(`  [pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
+    console.log();
+    console.log();
   }
 
   async componentWillDestroy() {
-    console.log(process.pid, 'componentWillDestroy');
+    await this._app.callLife('close');
   }
 
   async componentDidDestroyed() {
     this.server.close();
-    console.log(process.pid, 'componentDidDestroyed');
+    console.info(`\n  [pid:${process.pid}] server closed`);
   }
 
   componentCatchError(err: Error) {

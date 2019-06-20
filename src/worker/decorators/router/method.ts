@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import * as FindMyWay from 'find-my-way';
-import ControllerComponent from '../components/controller';
-import DecoratorNameSpace from './namespace';
+import ControllerComponent from '../../components/controller';
+import DecoratorNameSpace from '../namespace';
 
 export default function Method(method?: FindMyWay.HTTPMethod) {
   return (

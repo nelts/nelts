@@ -1,12 +1,14 @@
+import * as path from 'path';
 import Plugin from './plugin';
 import _component_controller from './worker/components/controller';
-import _decorator_prefix from './worker/decorators/router-prefix';
-import _decorator_path from './worker/decorators/router-path';
-import _decorator_method from './worker/decorators/router-method';
-import _decorator_get from './worker/decorators/router-get';
-import _decorator_post from './worker/decorators/router-post';
-import _decorator_put from './worker/decorators/router-put';
-import _decorator_delete from './worker/decorators/router-delete';
+import _component_service from './worker/components/service';
+import _decorator_prefix from './worker/decorators/router/prefix';
+import _decorator_path from './worker/decorators/router/path';
+import _decorator_method from './worker/decorators/router/method';
+import _decorator_get from './worker/decorators/router/get';
+import _decorator_post from './worker/decorators/router/post';
+import _decorator_put from './worker/decorators/router/put';
+import _decorator_delete from './worker/decorators/router/delete';
 import _decorator_request_static_validator_header from './worker/decorators/request/static-validator-header';
 import _decorator_request_static_validator_query from './worker/decorators/request/static-validator-query';
 import _decorator_request_static_filter from './worker/decorators/request/static-filter';
@@ -22,13 +24,23 @@ import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
 import Context from './worker/context';
 
+export function Require(pather: string, cwd?: string) {
+  try{
+    const moduleExports = path.isAbsolute(pather) 
+      ? require(pather) 
+      : require(path.resolve(cwd || process.cwd(), pather));
+    return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
+  } catch(e) {}
+}
+
 export interface NELTS_CONFIGS {
   cookie?: string[],
   [name: string]: any,
 }
 
 const Component = {
-  Controller: _component_controller
+  Controller: _component_controller,
+  Service: _component_service
 }
 
 const Decorator = {

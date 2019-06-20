@@ -2,8 +2,6 @@ import * as path from 'path';
 import Component from './worker/index';
 import EventEmitter from './helper/events';
 import { NELTS_CONFIGS } from './export';
-import * as Compose from  'koa-compose';
-import Context from './worker/context';
 
 export default class Plugin extends EventEmitter {
   private _name: string;
@@ -11,34 +9,24 @@ export default class Plugin extends EventEmitter {
   private _app: Component;
   private _env: string;
   private _source: string;
-  private _components: Array<string>;
-  private _service: { [name: string]: any };
+  private _components: Array<string> = [];
   private _configs: NELTS_CONFIGS;
-  private _middleware: { [name: string]: Compose.Middleware<Context> } = {};
+  public closed: boolean;
+  [name: string]: any;
 
   constructor(app: Component, name: string, cwd: string) {
     super();
     this._app = app;
     this._name = name;
     this._cwd = cwd;
-    this._service = {};
+    this._env = app.env;
     this._source = app.env.indexOf('dev') === 0 
       ? path.resolve(cwd, 'src') 
       : path.resolve(cwd, 'dist');
-    this._env = app.env;
-    this._components = [];
-  }
-
-  get middleware() {
-    return this._middleware;
   }
 
   get configs() {
     return this._configs;
-  }
-
-  get service() {
-    return this._service;
   }
 
   get server() {
@@ -83,9 +71,21 @@ export default class Plugin extends EventEmitter {
     return this._app.plugins[name];
   }
 
-  render(configs: NELTS_CONFIGS) {
+  props(configs: NELTS_CONFIGS) {
     this._configs = typeof configs === 'object' 
       ? Object.freeze(configs) 
       : configs;
+  }
+
+  async callLife(name: string, ...args:any[]) {
+    await this.emit(name, ...args);
+    this.closed = true;
+    for (let i = 0; i < this._components.length; i++) {
+      const componentName = this._components[i];
+      const plugin = this._app.plugins[componentName];
+      if (plugin && !plugin.closed) {
+        await plugin.callLife(name, ...args);
+      }
+    }
   }
 }

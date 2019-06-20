@@ -10,6 +10,7 @@ import ajvChecker from '../../helper/ajv-checker';
 import * as statuses from 'statuses';
 import isJSON from '../../helper/is-json';
 import * as Stream from 'stream';
+import { Require } from '../../export';
 
 interface CONTROLLER_DECS {
   REQUEST_STATIC_VALIDATOR_HEADER: object,
@@ -27,15 +28,15 @@ interface CONTROLLER_DECS {
 export default async function Controller(plugin: Plugin) {
   const cwd = plugin.source;
   const files = await globby([
-    'app/controller/**/*.ts', 
-    'app/controller/**/*.js', 
-    '!app/controller/**/*.d.ts', 
+    'controller/**/*.ts', 
+    'controller/**/*.js', 
+    '!controller/**/*.d.ts', 
   ], { cwd });
   files.forEach((file: string) => render(plugin, path.resolve(cwd, file)));
 }
 
 function render(plugin: Plugin, file: string) {
-  let fileExports: any = require(file).default;
+  let fileExports: any = Require(file);
   if (fileExports.scoped) fileExports = fileExports(plugin);
   const controllerPrefix = Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_PREFIX, fileExports) || '/';
   const controllerProperties = Object.getOwnPropertyNames(fileExports.prototype);

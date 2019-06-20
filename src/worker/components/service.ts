@@ -1,17 +1,13 @@
 import Plugin from '../../plugin';
 import Component from './base';
 
-export default class Controller extends Component {
+export default class Service extends Component {
   constructor(plugin: Plugin) {
     super(plugin);
   }
 
   get service() {
     return this.app.service;
-  }
-
-  get middleware() {
-    return this.app.middleware;
   }
 
   getComponentServiceByName(name: string) {

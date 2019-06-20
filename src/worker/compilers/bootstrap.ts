@@ -1,6 +1,7 @@
 import * as path from 'path';
 import Plugin from '../../plugin';
 import globby from 'globby';
+import { Require } from '../../export';
 export default async function Bootstrap(plugin: Plugin) {
   const cwd = plugin.source;
   const files = await globby([ 
@@ -10,7 +11,7 @@ export default async function Bootstrap(plugin: Plugin) {
   ], { cwd });
   if (files.length) {
     const file = path.resolve(cwd, files[0]);
-    const callback = require(file);
+    const callback = Require(file);
     if (typeof callback === 'function') {
       await callback(plugin);
     }
