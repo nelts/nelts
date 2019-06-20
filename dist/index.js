@@ -28,7 +28,7 @@ class Master extends process_1.Component {
             await this._forker();
     }
     componentCatchError(err) {
-        console.log(err);
+        console.error(err);
     }
     componentReceiveMessage(message, socket) { }
 }

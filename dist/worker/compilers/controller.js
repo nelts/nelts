@@ -10,18 +10,19 @@ const ajv_checker_1 = require("../../helper/ajv-checker");
 const statuses = require("statuses");
 const is_json_1 = require("../../helper/is-json");
 const Stream = require("stream");
+const export_1 = require("../../export");
 async function Controller(plugin) {
     const cwd = plugin.source;
     const files = await globby_1.default([
-        'app/controller/**/*.ts',
-        'app/controller/**/*.js',
-        '!app/controller/**/*.d.ts',
+        'controller/**/*.ts',
+        'controller/**/*.js',
+        '!controller/**/*.d.ts',
     ], { cwd });
     files.forEach((file) => render(plugin, path.resolve(cwd, file)));
 }
 exports.default = Controller;
 function render(plugin, file) {
-    let fileExports = require(file).default;
+    let fileExports = export_1.Require(file);
     if (fileExports.scoped)
         fileExports = fileExports(plugin);
     const controllerPrefix = Reflect.getMetadata(namespace_1.default.CONTROLLER_PREFIX, fileExports) || '/';

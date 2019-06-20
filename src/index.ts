@@ -36,7 +36,7 @@ export default class Master extends Component {
   //   console.log(4)
   // }
   componentCatchError(err: Error) {
-    console.log(err);
+    console.error(err);
   }
   componentReceiveMessage(message:any, socket?:any) {}
 }

@@ -9,4 +9,4 @@ perf
 *.map
 npm-debug.log
 .vscode
-.wox.js
+tsconfig.tsbuildinfo

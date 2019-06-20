@@ -99,7 +99,7 @@ export default class WorkerComponent extends Component {
   }
 
   componentCatchError(err: Error) {
-    console.log(err);
+    console.error(err);
   }
 
   componentReceiveMessage(message:any, socket?:any) {}

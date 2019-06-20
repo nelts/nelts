@@ -7,7 +7,7 @@ import { Component, Processer } from '@nelts/process';
 export declare type PLUGINS = {
     [name: string]: Plugin;
 };
-export default class DemoComponent extends Component {
+export default class WorkerComponent extends Component {
     private _base;
     private _env;
     private _plugins;

@@ -1,15 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 const plugin_1 = require("./plugin");
 exports.Plugin = plugin_1.default;
 const controller_1 = require("./worker/components/controller");
-const router_prefix_1 = require("./worker/decorators/router-prefix");
-const router_path_1 = require("./worker/decorators/router-path");
-const router_method_1 = require("./worker/decorators/router-method");
-const router_get_1 = require("./worker/decorators/router-get");
-const router_post_1 = require("./worker/decorators/router-post");
-const router_put_1 = require("./worker/decorators/router-put");
-const router_delete_1 = require("./worker/decorators/router-delete");
+const service_1 = require("./worker/components/service");
+const prefix_1 = require("./worker/decorators/router/prefix");
+const path_1 = require("./worker/decorators/router/path");
+const method_1 = require("./worker/decorators/router/method");
+const get_1 = require("./worker/decorators/router/get");
+const post_1 = require("./worker/decorators/router/post");
+const put_1 = require("./worker/decorators/router/put");
+const delete_1 = require("./worker/decorators/router/delete");
 const static_validator_header_1 = require("./worker/decorators/request/static-validator-header");
 const static_validator_query_1 = require("./worker/decorators/request/static-validator-query");
 const static_filter_1 = require("./worker/decorators/request/static-filter");
@@ -28,19 +30,30 @@ const scope_1 = require("./scope");
 exports.Scope = scope_1.default;
 const context_1 = require("./worker/context");
 exports.Context = context_1.default;
+function Require(pather, cwd) {
+    try {
+        const moduleExports = path.isAbsolute(pather)
+            ? require(pather)
+            : require(path.resolve(cwd || process.cwd(), pather));
+        return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
+    }
+    catch (e) { }
+}
+exports.Require = Require;
 const Component = {
-    Controller: controller_1.default
+    Controller: controller_1.default,
+    Service: service_1.default
 };
 exports.Component = Component;
 const Decorator = {
     Controller: {
-        Prefix: router_prefix_1.default,
-        Path: router_path_1.default,
-        Method: router_method_1.default,
-        Get: router_get_1.default,
-        Post: router_post_1.default,
-        Put: router_put_1.default,
-        Delete: router_delete_1.default,
+        Prefix: prefix_1.default,
+        Path: path_1.default,
+        Method: method_1.default,
+        Get: get_1.default,
+        Post: post_1.default,
+        Put: put_1.default,
+        Delete: delete_1.default,
         Request: {
             Static: {
                 Filter: static_filter_1.default,

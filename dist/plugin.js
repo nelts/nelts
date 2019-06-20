@@ -5,25 +5,17 @@ const events_1 = require("./helper/events");
 class Plugin extends events_1.default {
     constructor(app, name, cwd) {
         super();
-        this._middleware = {};
+        this._components = [];
         this._app = app;
         this._name = name;
         this._cwd = cwd;
-        this._service = {};
+        this._env = app.env;
         this._source = app.env.indexOf('dev') === 0
             ? path.resolve(cwd, 'src')
             : path.resolve(cwd, 'dist');
-        this._env = app.env;
-        this._components = [];
-    }
-    get middleware() {
-        return this._middleware;
     }
     get configs() {
         return this._configs;
-    }
-    get service() {
-        return this._service;
     }
     get server() {
         return this._app.server;
@@ -59,10 +51,21 @@ class Plugin extends events_1.default {
             throw new Error(`${name} is not depended on ${this.name}`);
         return this._app.plugins[name];
     }
-    render(configs) {
+    props(configs) {
         this._configs = typeof configs === 'object'
             ? Object.freeze(configs)
             : configs;
+    }
+    async callLife(name, ...args) {
+        await this.emit(name, ...args);
+        this.closed = true;
+        for (let i = 0; i < this._components.length; i++) {
+            const componentName = this._components[i];
+            const plugin = this._app.plugins[componentName];
+            if (plugin && !plugin.closed) {
+                await plugin.callLife(name, ...args);
+            }
+        }
     }
 }
 exports.default = Plugin;
