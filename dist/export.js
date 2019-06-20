@@ -31,13 +31,10 @@ exports.Scope = scope_1.default;
 const context_1 = require("./worker/context");
 exports.Context = context_1.default;
 function Require(pather, cwd) {
-    try {
-        const moduleExports = path.isAbsolute(pather)
-            ? require(pather)
-            : require(path.resolve(cwd || process.cwd(), pather));
-        return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
-    }
-    catch (e) { }
+    const moduleExports = path.isAbsolute(pather)
+        ? require(pather)
+        : require(path.resolve(cwd || process.cwd(), pather));
+    return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
 }
 exports.Require = Require;
 const Component = {
