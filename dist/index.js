@@ -24,8 +24,11 @@ class Master extends process_1.Component {
         this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config });
     }
     async componentDidCreated() {
-        for (let i = 0; i < this._max; i++)
-            await this._forker();
+        for (let i = 0; i < this._max; i++) {
+            console.info('forking worker...');
+            const worker = await this._forker();
+            console.info(`worker [pid:${worker.pid}] forked.`);
+        }
     }
     componentCatchError(err) {
         console.error(err);

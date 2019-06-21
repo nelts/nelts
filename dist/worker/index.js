@@ -13,7 +13,7 @@ const middleware_1 = require("./compilers/middleware");
 const service_1 = require("./compilers/service");
 class WorkerComponent extends process_1.Component {
     constructor(processer, args) {
-        console.info(`  [pid:${process.pid}] server opening...`);
+        console.info(`[pid:${process.pid}] server opening...`);
         super(processer, args);
         this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
         this._env = args.env;
@@ -46,8 +46,6 @@ class WorkerComponent extends process_1.Component {
     async componentWillCreate() {
         this.render = plugin_render_1.default(this, true);
         this._app = await this.render(this.base);
-        if (this._configs)
-            this._app.props(this._configs);
         this.compiler.addCompiler(middleware_1.default);
         this.compiler.addCompiler(service_1.default);
         this.compiler.addCompiler(controller_1.default);
@@ -56,6 +54,8 @@ class WorkerComponent extends process_1.Component {
     }
     async componentDidCreated() {
         await this.compiler.run();
+        if (this._configs)
+            this._app.props(this._configs);
         await new Promise((resolve, reject) => {
             this.server.listen(this._port, (err) => {
                 if (err)
@@ -63,17 +63,19 @@ class WorkerComponent extends process_1.Component {
                 resolve();
             });
         });
-        await this._app.callLife('open');
-        console.info(`  [pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
+        await this._app.broadcast('ServerStarted');
+        console.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
         console.log();
         console.log();
     }
     async componentWillDestroy() {
-        await this._app.callLife('close');
+        await this._app.broadcast('ServerStopping');
     }
     async componentDidDestroyed() {
         this.server.close();
-        console.info(`\n  [pid:${process.pid}] server closed`);
+        await new Promise(resolve => process.nextTick(resolve));
+        await this._app.broadcast('ServerStopped');
+        console.info(`\n[pid:${process.pid}] server closed`);
     }
     componentCatchError(err) {
         console.error(err);

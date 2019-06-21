@@ -51,20 +51,19 @@ class Plugin extends events_1.default {
             throw new Error(`${name} is not depended on ${this.name}`);
         return this._app.plugins[name];
     }
-    props(configs) {
+    async props(configs) {
         this._configs = typeof configs === 'object'
             ? Object.freeze(configs)
             : configs;
+        await this.emit('props', this._configs);
     }
-    async callLife(name, ...args) {
+    async broadcast(name, ...args) {
         await this.emit(name, ...args);
-        this.closed = true;
         for (let i = 0; i < this._components.length; i++) {
             const componentName = this._components[i];
             const plugin = this._app.plugins[componentName];
-            if (plugin && !plugin.closed) {
+            if (plugin)
                 await plugin.callLife(name, ...args);
-            }
         }
     }
 }

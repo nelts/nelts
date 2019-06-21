@@ -10,7 +10,6 @@ export default class Plugin extends EventEmitter {
     private _source;
     private _components;
     private _configs;
-    closed: boolean;
     [name: string]: any;
     constructor(app: Component, name: string, cwd: string);
     readonly configs: NELTS_CONFIGS;
@@ -23,6 +22,6 @@ export default class Plugin extends EventEmitter {
     addCompiler(compiler: (plugin: Plugin) => Promise<any>): Plugin;
     setComponent(...deps: string[]): void;
     getComponent(name: string): Plugin;
-    props(configs: NELTS_CONFIGS): void;
-    callLife(name: string, ...args: any[]): Promise<void>;
+    props(configs: NELTS_CONFIGS): Promise<void>;
+    broadcast(name: string, ...args: any[]): Promise<void>;
 }
