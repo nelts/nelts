@@ -27,7 +27,7 @@ export default class WorkerComponent extends Component {
   public router: Router.Instance<Router.HTTPVersion.V1>;
 
   constructor(processer: Processer, args: { [name:string]: any }) {
-    console.info(`  [pid:${process.pid}] server opening...`);
+    console.info(`[pid:${process.pid}] server opening...`);
     super(processer, args);
     this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
     this._env = args.env;
@@ -67,7 +67,6 @@ export default class WorkerComponent extends Component {
   async componentWillCreate() {
     this.render = PluginRender(this, true);
     this._app = await this.render(this.base);
-    if (this._configs) this._app.props(this._configs);
     this.compiler.addCompiler(MiddlewareCompiler);
     this.compiler.addCompiler(ServiceCompiler);
     this.compiler.addCompiler(ControllerCompiler);
@@ -77,25 +76,28 @@ export default class WorkerComponent extends Component {
 
   async componentDidCreated() {
     await this.compiler.run();
+    if (this._configs) this._app.props(this._configs);
     await new Promise((resolve, reject) => {
       this.server.listen(this._port, (err?: Error) => {
         if (err) return reject(err);
         resolve();
       });
     });
-    await this._app.callLife('open');
-    console.info(`  [pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
+    await this._app.broadcast('ServerStarted');
+    console.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
     console.log();
     console.log();
   }
 
   async componentWillDestroy() {
-    await this._app.callLife('close');
+    await this._app.broadcast('ServerStopping');
   }
 
   async componentDidDestroyed() {
     this.server.close();
-    console.info(`\n  [pid:${process.pid}] server closed`);
+    await new Promise(resolve => process.nextTick(resolve));
+    await this._app.broadcast('ServerStopped');
+    console.info(`\n[pid:${process.pid}] server closed`);
   }
 
   componentCatchError(err: Error) {

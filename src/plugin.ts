@@ -11,7 +11,6 @@ export default class Plugin extends EventEmitter {
   private _source: string;
   private _components: Array<string> = [];
   private _configs: NELTS_CONFIGS;
-  public closed: boolean;
   [name: string]: any;
 
   constructor(app: Component, name: string, cwd: string) {
@@ -71,21 +70,19 @@ export default class Plugin extends EventEmitter {
     return this._app.plugins[name];
   }
 
-  props(configs: NELTS_CONFIGS) {
+  async props(configs: NELTS_CONFIGS) {
     this._configs = typeof configs === 'object' 
       ? Object.freeze(configs) 
       : configs;
+    await this.emit('props', this._configs);
   }
 
-  async callLife(name: string, ...args:any[]) {
+  async broadcast(name: string, ...args:any[]) {
     await this.emit(name, ...args);
-    this.closed = true;
     for (let i = 0; i < this._components.length; i++) {
       const componentName = this._components[i];
       const plugin = this._app.plugins[componentName];
-      if (plugin && !plugin.closed) {
-        await plugin.callLife(name, ...args);
-      }
+      if (plugin) await plugin.callLife(name, ...args);
     }
   }
 }

@@ -27,7 +27,11 @@ export default class Master extends Component {
   }
 
   async componentDidCreated() {
-    for (let i = 0; i < this._max; i++) await this._forker();
+    for (let i = 0; i < this._max; i++) {
+      console.info('forking worker...');
+      const worker = await this._forker();
+      console.info(`worker [pid:${worker.pid}] forked.`);
+    }
   }
   // async componentWillDestroy() {
   //   console.log(3)
