@@ -12,6 +12,7 @@ export default class Plugin extends EventEmitter {
     private _configs;
     [name: string]: any;
     constructor(app: Component, name: string, cwd: string);
+    private _findSource;
     readonly configs: NELTS_CONFIGS;
     readonly server: import("http").Server;
     readonly app: Component;

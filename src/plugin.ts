@@ -1,7 +1,8 @@
 import * as path from 'path';
 import Component from './worker/index';
 import EventEmitter from './helper/events';
-import { NELTS_CONFIGS } from './export';
+import { NELTS_CONFIGS, Require } from './export';
+import * as fs from 'fs';
 
 export default class Plugin extends EventEmitter {
   private _name: string;
@@ -19,9 +20,15 @@ export default class Plugin extends EventEmitter {
     this._name = name;
     this._cwd = cwd;
     this._env = app.env;
-    this._source = app.env.indexOf('dev') === 0 
-      ? path.resolve(cwd, 'src') 
-      : path.resolve(cwd, 'dist');
+    this._source = this._findSource(cwd);
+  }
+
+  private _findSource(cwd: string) {
+    const packageFilePath = path.resolve(cwd, 'package.json');
+    if (!fs.existsSync(packageFilePath)) return cwd;
+    const packageExports = Require(packageFilePath);
+    if (!packageExports.source) return cwd;
+    return path.resolve(cwd, packageExports.source);
   }
 
   get configs() {
