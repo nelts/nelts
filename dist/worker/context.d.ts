@@ -8,6 +8,8 @@ declare type ParamSchema = {
 import Request from './request';
 import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import AsyncEventEmitter from '../helper/events';
+import { ContextError } from './context';
+declare type StackCallback = () => PromiseLike<void>;
 export interface ContextError extends Error {
     status?: number;
     expose?: boolean;
@@ -20,10 +22,15 @@ export default class Context extends AsyncEventEmitter {
     readonly cookies: Cookies;
     readonly request: Request;
     readonly response: Response;
+    private _stacks;
+    private _stackStatus;
     silent: boolean;
-    state: Record<any, any>;
+    state: Map<any, any>;
     respond: boolean;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
+    stash(fn: StackCallback): this;
+    commit(): Promise<void>;
+    rollback(e: ContextError): Promise<void>;
     readonly query: import("./request").RequestQuerySchema;
     readonly header: import("http").IncomingHttpHeaders;
     readonly headers: import("http").IncomingHttpHeaders;

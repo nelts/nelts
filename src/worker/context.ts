@@ -6,6 +6,10 @@ import Request from './request';
 import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import * as util from 'util';
 import AsyncEventEmitter from '../helper/events';
+import { ContextError } from './context';
+
+type StackCallback = () => PromiseLike<void>;
+type StackStatus = 0 | 1 | 2;
 
 export interface ContextError extends Error {
   status?: number,
@@ -21,12 +25,16 @@ export default class Context extends AsyncEventEmitter {
   readonly cookies: Cookies;
   readonly request: Request;
   readonly response: Response;
+  private _stacks: StackCallback[];
+  private _stackStatus: StackStatus;
   public silent: boolean;
-  public state: Record<any, any>;
+  public state: Map<any, any>;
   public respond: boolean;
 
   constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema) {
     super();
+    this._stacks = [];
+    this._stackStatus = 0;
     this.app = app;
     this.req = req;
     this.res = res;
@@ -38,6 +46,26 @@ export default class Context extends AsyncEventEmitter {
       keys: app.configs.cookie || ['nelts', 'context'],
       secure: this.request.secure,
     });
+  }
+
+  stash(fn: StackCallback) {
+    this._stacks.push(fn);
+    return this;
+  }
+
+  async commit() {
+    if (this._stackStatus !== 0) return;
+    await this.app.root.broadcast('ContextResolve', this);
+    this._stackStatus = 2;
+  }
+
+  async rollback(e: ContextError) {
+    if (this._stackStatus !== 0) return;
+    const stacks = this._stacks.slice(0);
+    let i = stacks.length;
+    while (i--) await stacks[i]();
+    await this.app.root.broadcast('ContextReject', e, this);
+    this._stackStatus = 1;
   }
 
   get query() {

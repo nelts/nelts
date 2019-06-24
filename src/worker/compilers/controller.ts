@@ -69,12 +69,24 @@ function render(plugin: Plugin, file: string) {
     app.router.on(methods, CurrentRouterPrefix + CurrentRouterPath, (req, res, params) => {
       const ctx = ContextProxy(new Context(plugin, req, res, params));
       const fns = addComposeCallback(DECS, fileExports, property, plugin);
-      Compose(fns)(ctx).catch((e: ContextError) => {
-        if (ctx.listenerCount('error')) return ctx.emit('error', new Error(e.message));
-        if (ctx.app.listenerCount('error')) return ctx.app.emit('error', new Error(e.message), ctx);
-        ctx.status = (e && e.status) || 500;
-        ctx.body = `<html lang="en"><head><title>Internet Server Error: ${ctx.status}</title></head><body><h1>Internet server error: ${ctx.status}</h1><pre>${e.message}</pre></body></html>`;
-      }).then(() => respond(ctx));
+      ctx.app.root.broadcast('ContextStart', ctx)
+        .then(() => Compose(fns)(ctx))
+        .catch(async (e: ContextError) => {
+          if (ctx.listenerCount('error')) {
+            await ctx.emit('error', e);
+          } else {
+            ctx.status = (e && e.status) || 500;
+            ctx.body = e.message;
+          }
+          return ctx.rollback(e);
+        })
+        .then(() => ctx.commit())
+        .then(() => ctx.app.root.broadcast('ContextStop', ctx))
+        .catch((e: ContextError) => {
+          ctx.status = (e && e.status) || 500;
+          ctx.body = e.message;
+        })
+        .then(() => respond(ctx));
     });
   }
 }
@@ -86,6 +98,7 @@ function addComposeCallback(
   plugin: Plugin
 ) {
   const callbacks: Compose.Middleware<Context>[] = [];
+  // 校验 headers 和 querys 的参数是否合法
   callbacks.push(async (ctx, next) => {
     const staticValidators = [];
     if (options.REQUEST_STATIC_VALIDATOR_HEADER) staticValidators.push(ajvChecker(options.REQUEST_STATIC_VALIDATOR_HEADER, ctx.request.headers, 'Header'));
@@ -93,7 +106,17 @@ function addComposeCallback(
     await Promise.all(staticValidators);
     await next();
   });
+
+  // 广播`ContextStaticValidator`生命周期
+  addContextLife('ContextStaticValidator');
+
+  // 静态参数最终处理
   if (options.REQUEST_STATIC_FILTER) callbacks.push(...options.REQUEST_STATIC_FILTER);
+
+  // 广播`ContextStaticFilter`生命周期
+  addContextLife('ContextStaticFilter');
+
+  // 如何获取动态参数中间件
   if (options.REQUEST_DYNAMIC_LOADER) {
     callbacks.push(...options.REQUEST_DYNAMIC_LOADER);
     callbacks.push(async (ctx: Context, next: Function) => {
@@ -101,6 +124,11 @@ function addComposeCallback(
       await next();
     });
   }
+
+  // 广播`ContextDynamicLoader`生命周期
+  addContextLife('ContextDynamicLoader');
+
+  // 校验动态参数
   callbacks.push(async (ctx, next) => {
     const dynamicValidators = [];
     if (options.REQUEST_DYNAMIC_VALIDATOR_BODY) dynamicValidators.push(ajvChecker(options.REQUEST_DYNAMIC_VALIDATOR_BODY, ctx.request.body, 'Body'));
@@ -108,16 +136,52 @@ function addComposeCallback(
     await Promise.all(dynamicValidators);
     await next();
   });
+
+  // 广播`ContextDynamicValidator`生命周期
+  addContextLife('ContextDynamicValidator');
+
+  // 动态参数最终处理
   if (options.REQUEST_DYNAMIC_FILTER) callbacks.push(...options.REQUEST_DYNAMIC_FILTER);
+
+  // 广播`ContextDynamicFilter`生命周期
+  addContextLife('ContextDynamicFilter');
+
+  // 守卫中间件
   if (options.REQUEST_GUARD) callbacks.push(...options.REQUEST_GUARD);
+
+  // 广播`ContextGuard`生命周期
+  addContextLife('ContextGuard');
+
+  // 逻辑中间件
   if (options.MIDDLEWARE) callbacks.push(...options.MIDDLEWARE);
+
+  // 广播`ContextMiddleware`生命周期
+  addContextLife('ContextMiddleware');
+
+  // 逻辑处理
   callbacks.push(async (ctx: Context, next: Function) => {
     const object = new controller(plugin);
     await object[property](ctx);
     await next();
   });
+
+  // 广播`ContextRuntime`生命周期
+  addContextLife('ContextRuntime');
+
+  // 最终输出处理中间件
   if (options.RESPONSE) callbacks.push(...options.RESPONSE);
+
+  // 广播`ContextResponse`生命周期
+  addContextLife('ContextResponse');
+
   return callbacks;
+
+  function addContextLife(name: string) {
+    callbacks.push(async (ctx:Context, next: Function) => {
+      await ctx.app.root.broadcast(name, ctx);
+      await next();
+    })
+  }
 }
 
 function respond(ctx: Context) {

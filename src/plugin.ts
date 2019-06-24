@@ -12,6 +12,7 @@ export default class Plugin extends EventEmitter {
   private _source: string;
   private _components: Array<string> = [];
   private _configs: NELTS_CONFIGS;
+  public root: Plugin;
   [name: string]: any;
 
   constructor(app: Component, name: string, cwd: string) {

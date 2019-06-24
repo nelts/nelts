@@ -8,6 +8,8 @@ const events_1 = require("../helper/events");
 class Context extends events_1.default {
     constructor(app, req, res, params) {
         super();
+        this._stacks = [];
+        this._stackStatus = 0;
         this.app = app;
         this.req = req;
         this.res = res;
@@ -19,6 +21,26 @@ class Context extends events_1.default {
             keys: app.configs.cookie || ['nelts', 'context'],
             secure: this.request.secure,
         });
+    }
+    stash(fn) {
+        this._stacks.push(fn);
+        return this;
+    }
+    async commit() {
+        if (this._stackStatus !== 0)
+            return;
+        await this.app.root.broadcast('ContextResolve', this);
+        this._stackStatus = 2;
+    }
+    async rollback(e) {
+        if (this._stackStatus !== 0)
+            return;
+        const stacks = this._stacks.slice(0);
+        let i = stacks.length;
+        while (i--)
+            await stacks[i]();
+        await this.app.root.broadcast('ContextReject', e, this);
+        this._stackStatus = 1;
     }
     get query() {
         return this.request.query;

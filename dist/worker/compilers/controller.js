@@ -56,14 +56,25 @@ function render(plugin, file) {
         app.router.on(methods, CurrentRouterPrefix + CurrentRouterPath, (req, res, params) => {
             const ctx = context_1.ContextProxy(new context_1.default(plugin, req, res, params));
             const fns = addComposeCallback(DECS, fileExports, property, plugin);
-            Compose(fns)(ctx).catch((e) => {
-                if (ctx.listenerCount('error'))
-                    return ctx.emit('error', new Error(e.message));
-                if (ctx.app.listenerCount('error'))
-                    return ctx.app.emit('error', new Error(e.message), ctx);
+            ctx.app.root.broadcast('ContextStart', ctx)
+                .then(() => Compose(fns)(ctx))
+                .catch(async (e) => {
+                if (ctx.listenerCount('error')) {
+                    await ctx.emit('error', e);
+                }
+                else {
+                    ctx.status = (e && e.status) || 500;
+                    ctx.body = e.message;
+                }
+                return ctx.rollback(e);
+            })
+                .then(() => ctx.commit())
+                .then(() => ctx.app.root.broadcast('ContextStop', ctx))
+                .catch((e) => {
                 ctx.status = (e && e.status) || 500;
-                ctx.body = `<html lang="en"><head><title>Internet Server Error: ${ctx.status}</title></head><body><h1>Internet server error: ${ctx.status}</h1><pre>${e.message}</pre></body></html>`;
-            }).then(() => respond(ctx));
+                ctx.body = e.message;
+            })
+                .then(() => respond(ctx));
         });
     }
 }
@@ -78,8 +89,10 @@ function addComposeCallback(options, controller, property, plugin) {
         await Promise.all(staticValidators);
         await next();
     });
+    addContextLife('ContextStaticValidator');
     if (options.REQUEST_STATIC_FILTER)
         callbacks.push(...options.REQUEST_STATIC_FILTER);
+    addContextLife('ContextStaticFilter');
     if (options.REQUEST_DYNAMIC_LOADER) {
         callbacks.push(...options.REQUEST_DYNAMIC_LOADER);
         callbacks.push(async (ctx, next) => {
@@ -88,6 +101,7 @@ function addComposeCallback(options, controller, property, plugin) {
             await next();
         });
     }
+    addContextLife('ContextDynamicLoader');
     callbacks.push(async (ctx, next) => {
         const dynamicValidators = [];
         if (options.REQUEST_DYNAMIC_VALIDATOR_BODY)
@@ -97,20 +111,32 @@ function addComposeCallback(options, controller, property, plugin) {
         await Promise.all(dynamicValidators);
         await next();
     });
+    addContextLife('ContextDynamicValidator');
     if (options.REQUEST_DYNAMIC_FILTER)
         callbacks.push(...options.REQUEST_DYNAMIC_FILTER);
+    addContextLife('ContextDynamicFilter');
     if (options.REQUEST_GUARD)
         callbacks.push(...options.REQUEST_GUARD);
+    addContextLife('ContextGuard');
     if (options.MIDDLEWARE)
         callbacks.push(...options.MIDDLEWARE);
+    addContextLife('ContextMiddleware');
     callbacks.push(async (ctx, next) => {
         const object = new controller(plugin);
         await object[property](ctx);
         await next();
     });
+    addContextLife('ContextRuntime');
     if (options.RESPONSE)
         callbacks.push(...options.RESPONSE);
+    addContextLife('ContextResponse');
     return callbacks;
+    function addContextLife(name) {
+        callbacks.push(async (ctx, next) => {
+            await ctx.app.root.broadcast(name, ctx);
+            await next();
+        });
+    }
 }
 function respond(ctx) {
     if (false === ctx.respond)

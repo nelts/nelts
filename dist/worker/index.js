@@ -65,8 +65,6 @@ class WorkerComponent extends process_1.Component {
         });
         await this._app.broadcast('ServerStarted');
         console.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
-        console.log();
-        console.log();
     }
     async componentWillDestroy() {
         await this._app.broadcast('ServerStopping');
@@ -75,7 +73,7 @@ class WorkerComponent extends process_1.Component {
         this.server.close();
         await new Promise(resolve => process.nextTick(resolve));
         await this._app.broadcast('ServerStopped');
-        console.info(`\n[pid:${process.pid}] server closed`);
+        console.info(`[pid:${process.pid}] server closed`);
     }
     componentCatchError(err) {
         console.error(err);

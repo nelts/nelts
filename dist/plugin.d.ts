@@ -10,6 +10,7 @@ export default class Plugin extends EventEmitter {
     private _source;
     private _components;
     private _configs;
+    root: Plugin;
     [name: string]: any;
     constructor(app: Component, name: string, cwd: string);
     private _findSource;

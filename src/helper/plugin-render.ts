@@ -9,10 +9,12 @@ export default function MakePluginRender(app: Component, isWorker: boolean) {
   const node_module_path = path.resolve(base, 'node_modules');
   if (!fs.existsSync(node_module_path)) throw new Error('cannot find node_modules path');
 
-  async function dispatch(component_path: string) {
+  async function dispatch(component_path: string, root?: Plugin) {
     const { name, dependenties } = PluginCollectDependencies(component_path, node_module_path, { env: app.env, isWorker });
     if (!app.plugins[name]) app.plugins[name] = new Plugin(app, name, component_path);
-    const childrens = await Promise.all(dependenties.map(dep => dispatch(dep)));
+    if (!root) root = app.plugins[name];
+    app.plugins[name].root = root;
+    const childrens = await Promise.all(dependenties.map(dep => dispatch(dep, root)));
     app.plugins[name].setComponent(...childrens.map(child => child.name));
     app.compiler.addPlugin(app.plugins[name]);
     return app.plugins[name];
