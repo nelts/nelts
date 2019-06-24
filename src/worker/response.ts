@@ -12,14 +12,16 @@ import { extname } from 'path';
 import * as contentDisposition from 'content-disposition';
 import { is as typeis } from 'type-is';
 
-type fieldValueSchema = string | number | string[];
-type fieldObjectSchema = { [name: string]: fieldValueSchema };
+export type fieldValueSchema = string | number | string[];
+export type fieldObjectSchema = { [name: string]: fieldValueSchema };
 
 export default class Response {
   readonly ctx: Context;
   readonly res: ServerResponse;
   private _body: any;
   private _explicitStatus: boolean;
+  [name: string]: any;
+  
   constructor(ctx: Context, res: ServerResponse) {
     this.res = res;
     this.ctx = ctx;

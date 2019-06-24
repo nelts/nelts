@@ -3,7 +3,7 @@ import * as Cookies from 'cookies';
 import Plugin from '../plugin';
 type ParamSchema = { [name: string]: string };
 import Request from './request';
-import Response from './response';
+import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import * as util from 'util';
 import AsyncEventEmitter from '../helper/events';
 
@@ -50,6 +50,10 @@ export default class Context extends AsyncEventEmitter {
 
   get headers() {
     return this.request.headers;
+  }
+
+  set(field: string | fieldObjectSchema, val?: fieldValueSchema) {
+    this.response.set(field, val);
   }
 
   get(field: string) {
@@ -110,6 +114,26 @@ export default class Context extends AsyncEventEmitter {
 
   set type(value: string) {
     this.response.type = value;
+  }
+
+  redirect(url: string, alt?: string) {
+    this.response.redirect(url, alt);
+  }
+
+  attachment(filename: string, options: any) {
+    this.response.attachment(filename, options);
+  }
+
+  is(types: string | string[]) {
+    return this.response.is(types);
+  }
+
+  append(field: string, val: any) {
+    return this.response.append(field, val);
+  }
+
+  flushHeaders() {
+    return this.response.flushHeaders();
   }
 }
 

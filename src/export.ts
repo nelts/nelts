@@ -23,6 +23,8 @@ import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
 import Context from './worker/context';
+import JSON_SCHEMA from './worker/extra/json-schema';
+import * as Body from '@nelts/nelts-body';
 
 export function Require(pather: string, cwd?: string) {
   const moduleExports = path.isAbsolute(pather) 
@@ -73,13 +75,19 @@ const Decorator = {
   }
 };
 
+const Extra = {
+  JSON_SCHEMA,
+  Body
+}
+
 export {
   LRU,
   Scope,
+  Extra,
   Plugin,
   Context,
   Component,
   Decorator,
   AsyncEventEmitter,
-  AsyncEventEmitterListener
+  AsyncEventEmitterListener,
 }

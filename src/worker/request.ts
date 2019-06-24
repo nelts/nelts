@@ -20,6 +20,7 @@ export default class Request {
   readonly hostname: string;
   public body: any;
   public files: any;
+  [name: string]: any;
 
   private _accept: accepts.Accepts;
 
