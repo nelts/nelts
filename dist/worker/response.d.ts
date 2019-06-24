@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { ServerResponse } from "http";
 import Context from './context';
-declare type fieldValueSchema = string | number | string[];
-declare type fieldObjectSchema = {
+export declare type fieldValueSchema = string | number | string[];
+export declare type fieldObjectSchema = {
     [name: string]: fieldValueSchema;
 };
 export default class Response {
@@ -10,6 +10,7 @@ export default class Response {
     readonly res: ServerResponse;
     private _body;
     private _explicitStatus;
+    [name: string]: any;
     constructor(ctx: Context, res: ServerResponse);
     lastModified: string | Date | number;
     etag: string;
@@ -33,4 +34,3 @@ export default class Response {
     append(field: string, val: any): void;
     flushHeaders(): void;
 }
-export {};

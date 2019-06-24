@@ -17,6 +17,7 @@ export default class Request {
     readonly hostname: string;
     body: any;
     files: any;
+    [name: string]: any;
     private _accept;
     constructor(ctx: Context, req: IncomingMessage);
     readonly accept: accepts.Accepts;

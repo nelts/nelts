@@ -29,6 +29,9 @@ class Context extends events_1.default {
     get headers() {
         return this.request.headers;
     }
+    set(field, val) {
+        this.response.set(field, val);
+    }
     get(field) {
         return this.request.get(field);
     }
@@ -76,6 +79,21 @@ class Context extends events_1.default {
     }
     set type(value) {
         this.response.type = value;
+    }
+    redirect(url, alt) {
+        this.response.redirect(url, alt);
+    }
+    attachment(filename, options) {
+        this.response.attachment(filename, options);
+    }
+    is(types) {
+        return this.response.is(types);
+    }
+    append(field, val) {
+        return this.response.append(field, val);
+    }
+    flushHeaders() {
+        return this.response.flushHeaders();
     }
 }
 exports.default = Context;

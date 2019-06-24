@@ -30,6 +30,8 @@ const scope_1 = require("./scope");
 exports.Scope = scope_1.default;
 const context_1 = require("./worker/context");
 exports.Context = context_1.default;
+const json_schema_1 = require("./worker/extra/json-schema");
+const Body = require("@nelts/nelts-body");
 function Require(pather, cwd) {
     const moduleExports = path.isAbsolute(pather)
         ? require(pather)
@@ -74,3 +76,8 @@ const Decorator = {
     }
 };
 exports.Decorator = Decorator;
+const Extra = {
+    JSON_SCHEMA: json_schema_1.default,
+    Body
+};
+exports.Extra = Extra;

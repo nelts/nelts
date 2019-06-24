@@ -6,7 +6,7 @@ declare type ParamSchema = {
     [name: string]: string;
 };
 import Request from './request';
-import Response from './response';
+import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import AsyncEventEmitter from '../helper/events';
 export interface ContextError extends Error {
     status?: number;
@@ -27,6 +27,7 @@ export default class Context extends AsyncEventEmitter {
     readonly query: import("./request").RequestQuerySchema;
     readonly header: import("http").IncomingHttpHeaders;
     readonly headers: import("http").IncomingHttpHeaders;
+    set(field: string | fieldObjectSchema, val?: fieldValueSchema): void;
     get(field: string): string | string[];
     onerror(err: ContextError): void;
     body: any;
@@ -35,6 +36,11 @@ export default class Context extends AsyncEventEmitter {
     length: number;
     message: any;
     type: string;
+    redirect(url: string, alt?: string): void;
+    attachment(filename: string, options: any): void;
+    is(types: string | string[]): string | false;
+    append(field: string, val: any): void;
+    flushHeaders(): void;
 }
 export declare function ContextProxy(ctx: Context): Context;
 export {};
