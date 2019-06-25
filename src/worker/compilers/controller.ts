@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import * as path from 'path';
 import Plugin from '../../plugin';
 import globby from 'globby';
-import Context, { ContextProxy } from '../context';
+import Context from '../context';
 import DecoratorNameSpace from '../decorators/namespace';
 import * as Compose from 'koa-compose';
 import { ContextError } from '../context';
@@ -67,7 +67,7 @@ function render(plugin: Plugin, file: string) {
     }
 
     app.router.on(methods, CurrentRouterPrefix + CurrentRouterPath, (req, res, params) => {
-      const ctx = ContextProxy(new Context(plugin, req, res, params));
+      const ctx = new Context(plugin, req, res, params);
       const fns = addComposeCallback(DECS, fileExports, property, plugin);
       ctx.app.root.broadcast('ContextStart', ctx)
         .then(() => Compose(fns)(ctx))

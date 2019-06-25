@@ -5,8 +5,8 @@ export interface OPTIONS {
 export default class LRU {
   private max: number;
   private size: number;
-  private cache: Record<any, any>;
-  private _cache: Record<any, any>;
+  private cache: Map<any, any>;
+  private _cache: Map<any, any>;
   constructor(max: number) {
     this.max = max;
     this.size = 0;

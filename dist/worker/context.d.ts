@@ -27,6 +27,7 @@ export default class Context extends AsyncEventEmitter {
     silent: boolean;
     state: Map<any, any>;
     respond: boolean;
+    [label: string]: any;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
     stash(fn: StackCallback): this;
     commit(): Promise<void>;
@@ -49,5 +50,4 @@ export default class Context extends AsyncEventEmitter {
     append(field: string, val: any): void;
     flushHeaders(): void;
 }
-export declare function ContextProxy(ctx: Context): Context;
 export {};

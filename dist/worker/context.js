@@ -119,18 +119,3 @@ class Context extends events_1.default {
     }
 }
 exports.default = Context;
-function ContextProxy(ctx) {
-    return new Proxy(ctx, {
-        get(target, property) {
-            if (Reflect.has(target, property))
-                return Reflect.get(target, property);
-            return target.state.get(property);
-        },
-        set(target, property, value) {
-            if (Reflect.has(target, property))
-                return Reflect.set(target, property, value);
-            target.state.set(property, value);
-        }
-    });
-}
-exports.ContextProxy = ContextProxy;

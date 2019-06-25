@@ -30,6 +30,7 @@ export default class Context extends AsyncEventEmitter {
   public silent: boolean;
   public state: Map<any, any>;
   public respond: boolean;
+  [label: string]: any;
 
   constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema) {
     super();
@@ -165,15 +166,16 @@ export default class Context extends AsyncEventEmitter {
   }
 }
 
-export function ContextProxy(ctx: Context) {
-  return new Proxy(ctx, {
-    get(target, property) {
-      if (Reflect.has(target, property)) return Reflect.get(target, property);
-      return target.state.get(property);
-    },
-    set(target, property, value) {
-      if (Reflect.has(target, property)) return Reflect.set(target, property, value);
-      target.state.set(property, value);
-    }
-  })
-}
+// export function ContextProxy(ctx: Context) {
+//   return new Proxy(ctx, {
+//     get(target, property) {
+//       if (Reflect.has(target, property)) return Reflect.get(target, property);
+//       return target.state.get(property);
+//     },
+//     set(target, property, value) {
+//       if (Reflect.has(target, property)) return Reflect.set(target, property, value); 
+//       target.state.set(property, value);
+//       return true;
+//     }
+//   })
+// }

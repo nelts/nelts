@@ -54,7 +54,7 @@ function render(plugin, file) {
             RESPONSE: Reflect.getMetadata(namespace_1.default.CONTROLLER_RESPONSE, target),
         };
         app.router.on(methods, CurrentRouterPrefix + CurrentRouterPath, (req, res, params) => {
-            const ctx = context_1.ContextProxy(new context_1.default(plugin, req, res, params));
+            const ctx = new context_1.default(plugin, req, res, params);
             const fns = addComposeCallback(DECS, fileExports, property, plugin);
             ctx.app.root.broadcast('ContextStart', ctx)
                 .then(() => Compose(fns)(ctx))
