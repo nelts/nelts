@@ -12,7 +12,7 @@ export default async function Service(plugin: Plugin) {
   files.forEach(file => {
     const callback = Require(file, cwd);
     if (typeof callback === 'function' && callback.name) {
-      plugin.service[callback.name] = new callback(plugin);
+      plugin.service[callback.name] = callback;
     }
   });
 }

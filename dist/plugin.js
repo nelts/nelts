@@ -44,6 +44,18 @@ class Plugin extends events_1.default {
     get source() {
         return this._source;
     }
+    isDepended(name) {
+        if (!this._components.length)
+            return;
+        if (this._components.indexOf(name) > -1)
+            return true;
+        for (let i = 0; i < this._components.length; i++) {
+            const component = this.getComponent(this._components[i]);
+            const res = component.isDepended(name);
+            if (res)
+                return true;
+        }
+    }
     addCompiler(compiler) {
         this._app.compiler.addCompiler(compiler);
         return this;

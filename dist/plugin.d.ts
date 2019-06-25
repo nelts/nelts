@@ -21,6 +21,7 @@ export default class Plugin extends EventEmitter {
     readonly cwd: string;
     readonly env: string;
     readonly source: string;
+    isDepended(name: string): boolean;
     addCompiler(compiler: (plugin: Plugin) => Promise<any>): Plugin;
     setComponent(...deps: string[]): void;
     getComponent(name: string): Plugin;

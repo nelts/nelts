@@ -14,7 +14,7 @@ async function Service(plugin) {
     files.forEach(file => {
         const callback = export_1.Require(file, cwd);
         if (typeof callback === 'function' && callback.name) {
-            plugin.service[callback.name] = new callback(plugin);
+            plugin.service[callback.name] = callback;
         }
     });
 }

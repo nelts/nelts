@@ -60,6 +60,16 @@ export default class Plugin extends EventEmitter {
     return this._source;
   }
 
+  isDepended(name: string) {
+    if (!this._components.length) return;
+    if (this._components.indexOf(name) > -1) return true;
+    for (let i = 0; i < this._components.length; i++) {
+      const component = this.getComponent(this._components[i]);
+      const res = component.isDepended(name);
+      if (res) return true;
+    }
+  }
+
   addCompiler(compiler: (plugin: Plugin) => Promise<any>): Plugin {
     this._app.compiler.addCompiler(compiler);
     return this;
