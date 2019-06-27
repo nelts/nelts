@@ -84,7 +84,7 @@ class Plugin extends events_1.default {
             const componentName = this._components[i];
             const plugin = this._app.plugins[componentName];
             if (plugin)
-                await plugin.callLife(name, ...args);
+                await plugin.broadcast(name, ...args);
         }
     }
 }

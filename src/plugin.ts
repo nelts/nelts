@@ -100,7 +100,7 @@ export default class Plugin extends EventEmitter {
     for (let i = 0; i < this._components.length; i++) {
       const componentName = this._components[i];
       const plugin = this._app.plugins[componentName];
-      if (plugin) await plugin.callLife(name, ...args);
+      if (plugin) await plugin.broadcast(name, ...args);
     }
   }
 }

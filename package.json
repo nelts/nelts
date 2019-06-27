@@ -1,7 +1,7 @@
 {
   "name": "@nelts/nelts",
-  "version": "1.0.10",
-  "description": "",
+  "version": "1.0.11",
+  "description": "nelts core",
   "main": "dist/index.js",
   "scripts": {
     "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --script=src/index --base=test --max=1 --config=configs.json",
