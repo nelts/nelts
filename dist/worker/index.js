@@ -50,10 +50,14 @@ class WorkerComponent extends process_1.Component {
         this.compiler.addCompiler(service_1.default);
         this.compiler.addCompiler(controller_1.default);
         this.compiler.addCompiler(bootstrap_1.default);
-        this.server = http.createServer((req, res) => this._app.broadcast('ServerRequest', req, res).then(() => this.router.lookup(req, res)).catch(e => {
-            res.statusCode = 500;
-            res.end(e.message);
-        }));
+        this.server = http.createServer((req, res) => {
+            this._app.broadcast('ServerRequest', req, res)
+                .then(() => this.router.lookup(req, res))
+                .catch(e => {
+                res.statusCode = 500;
+                res.end(e.message);
+            });
+        });
     }
     async componentDidCreated() {
         await this.compiler.run();
