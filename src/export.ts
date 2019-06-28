@@ -22,7 +22,7 @@ import _decorator_response from './worker/decorators/response';
 import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
-import Context from './worker/context';
+import Context, { ContextError } from './worker/context';
 import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
 
@@ -88,6 +88,7 @@ export {
   Context,
   Component,
   Decorator,
+  ContextError,
   AsyncEventEmitter,
   AsyncEventEmitterListener,
 }

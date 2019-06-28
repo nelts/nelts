@@ -21,7 +21,7 @@ import _decorator_response from './worker/decorators/response';
 import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
-import Context from './worker/context';
+import Context, { ContextError } from './worker/context';
 import * as Body from '@nelts/nelts-body';
 export declare function Require(pather: string, cwd?: string): any;
 export interface NELTS_CONFIGS {
@@ -67,4 +67,4 @@ declare const Extra: {
     JSON_SCHEMA: (schema: import("fast-json-stringify").Schema) => (ctx: Context, next: Function) => Promise<any>;
     Body: typeof Body;
 };
-export { LRU, Scope, Extra, Plugin, Context, Component, Decorator, AsyncEventEmitter, AsyncEventEmitterListener, };
+export { LRU, Scope, Extra, Plugin, Context, Component, Decorator, ContextError, AsyncEventEmitter, AsyncEventEmitterListener, };
