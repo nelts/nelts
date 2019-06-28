@@ -71,10 +71,14 @@ export default class WorkerComponent extends Component {
     this.compiler.addCompiler(ServiceCompiler);
     this.compiler.addCompiler(ControllerCompiler);
     this.compiler.addCompiler(BootstrapCompiler);
-    this.server = http.createServer((req, res) => this._app.broadcast('ServerRequest', req, res).then(() => this.router.lookup(req, res)).catch(e => {
-      res.statusCode = 500;
-      res.end(e.message);
-    }));
+    this.server = http.createServer((req, res) => {
+      this._app.broadcast('ServerRequest', req, res)
+      .then(() => this.router.lookup(req, res))
+      .catch(e => {
+        res.statusCode = 500;
+        res.end(e.message);
+      });
+    });
   }
 
   async componentDidCreated() {
