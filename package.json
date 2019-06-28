@@ -1,6 +1,6 @@
 {
   "name": "@nelts/nelts",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "nelts core",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "cevio",
   "license": "MIT",
   "dependencies": {
-    "@nelts/nelts-body": "^1.0.0",
+    "@nelts/nelts-body": "^1.0.2",
     "@nelts/process": "^1.0.7",
     "@types/accepts": "^1.3.5",
     "@types/content-disposition": "^0.5.2",
@@ -25,7 +25,7 @@
     "content-disposition": "^0.5.3",
     "cookies": "^0.7.3",
     "fast-json-stringify": "^1.15.3",
-    "find-my-way": "^2.0.1",
+    "find-my-way": "^2.1.0",
     "globby": "^9.2.0",
     "koa-compose": "^4.1.0",
     "mime-types": "^2.1.24",
