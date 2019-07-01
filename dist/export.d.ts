@@ -23,7 +23,7 @@ import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
 import Context, { ContextError } from './worker/context';
 import * as Body from '@nelts/nelts-body';
-export declare function Require(pather: string, cwd?: string): any;
+export declare function Require<T = any>(pather: string, cwd?: string): T;
 export interface NELTS_CONFIGS {
     cookie?: string[];
     [name: string]: any;

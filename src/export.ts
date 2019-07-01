@@ -26,11 +26,11 @@ import Context, { ContextError } from './worker/context';
 import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
 
-export function Require(pather: string, cwd?: string) {
+export function Require<T = any>(pather: string, cwd?: string) {
   const moduleExports = path.isAbsolute(pather) 
     ? require(pather) 
     : require(path.resolve(cwd || process.cwd(), pather));
-  return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
+  return moduleExports.__esModule && moduleExports.default ? <T>moduleExports.default : <T>moduleExports;
 }
 
 export interface NELTS_CONFIGS {
