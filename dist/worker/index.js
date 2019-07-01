@@ -9,6 +9,8 @@ const process_1 = require("@nelts/process");
 const export_1 = require("../export");
 const bootstrap_1 = require("./compilers/bootstrap");
 const controller_1 = require("./compilers/controller");
+const middleware_1 = require("./compilers/middleware");
+const service_1 = require("./compilers/service");
 class WorkerComponent extends process_1.Component {
     constructor(processer, args) {
         console.info(`[pid:${process.pid}] server opening...`);
@@ -44,6 +46,8 @@ class WorkerComponent extends process_1.Component {
     async componentWillCreate() {
         this.render = plugin_render_1.default(this, true);
         this._app = await this.render(this.base);
+        this.compiler.addCompiler(middleware_1.default);
+        this.compiler.addCompiler(service_1.default);
         this.compiler.addCompiler(controller_1.default);
         this.compiler.addCompiler(bootstrap_1.default);
         this.server = http.createServer((req, res) => {
