@@ -67,8 +67,8 @@ export default class WorkerComponent extends Component {
   async componentWillCreate() {
     this.render = PluginRender(this, true);
     this._app = await this.render(this.base);
-    this.compiler.addCompiler(MiddlewareCompiler);
-    this.compiler.addCompiler(ServiceCompiler);
+    // this.compiler.addCompiler(MiddlewareCompiler);
+    // this.compiler.addCompiler(ServiceCompiler);
     this.compiler.addCompiler(ControllerCompiler);
     this.compiler.addCompiler(BootstrapCompiler);
     this.server = http.createServer((req, res) => {
