@@ -38,6 +38,10 @@ export interface NELTS_CONFIGS {
   [name: string]: any,
 }
 
+export type CustomExtendableType<T> = {
+  [K in keyof T]: T[K];
+}
+
 const Component = {
   Controller: _component_controller,
   Service: _component_service

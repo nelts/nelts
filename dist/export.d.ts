@@ -28,6 +28,9 @@ export interface NELTS_CONFIGS {
     cookie?: string[];
     [name: string]: any;
 }
+export declare type CustomExtendableType<T> = {
+    [K in keyof T]: T[K];
+};
 declare const Component: {
     Controller: typeof _component_controller;
     Service: typeof _component_service;
