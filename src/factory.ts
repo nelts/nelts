@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Component, Processer } from '@nelts/process';
-import { NELTS_CONFIGS, Require } from './export';
+import { NELTS_CONFIGS } from './export';
+import Require from './helper/require';
 import Compiler from './compiler';
 
 export default class Factory<T> extends Component {

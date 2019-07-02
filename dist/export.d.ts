@@ -27,7 +27,7 @@ import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
 import Context, { ContextError } from './worker/context';
 import * as Body from '@nelts/nelts-body';
-export declare function Require<T = any>(pather: string, cwd?: string): T;
+import Require from './helper/require';
 export interface NELTS_CONFIGS {
     cookie?: string[];
     [name: string]: any;
@@ -74,4 +74,4 @@ declare const Extra: {
     JSON_SCHEMA: (schema: import("fast-json-stringify").Schema) => (ctx: Context, next: Function) => Promise<any>;
     Body: typeof Body;
 };
-export { LRU, Scope, Extra, Plugin, Context, Component, Decorator, AgentPlugin, WorkerPlugin, ContextError, AgentApplciation, WorkerApplciation, AsyncEventEmitter, AsyncEventEmitterListener, };
+export { LRU, Scope, Extra, Require, Plugin, Context, Component, Decorator, AgentPlugin, WorkerPlugin, ContextError, AgentApplciation, WorkerApplciation, AsyncEventEmitter, AsyncEventEmitterListener, };

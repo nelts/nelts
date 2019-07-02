@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
 const events_1 = require("./helper/events");
-const export_1 = require("./export");
+const require_1 = require("./helper/require");
 class Plugin extends events_1.default {
     constructor(app, name, cwd) {
         super();
@@ -18,7 +18,7 @@ class Plugin extends events_1.default {
         const packageFilePath = path.resolve(cwd, 'package.json');
         if (!fs.existsSync(packageFilePath))
             return cwd;
-        const packageExports = export_1.Require(packageFilePath);
+        const packageExports = require_1.default(packageFilePath);
         if (!packageExports.source)
             return cwd;
         return path.resolve(cwd, packageExports.source);

@@ -1,4 +1,3 @@
-import * as path from 'path';
 import Plugin from './plugin';
 import WorkerPlugin from './worker/plugin';
 import AgentPlugin from './agent/plugin';
@@ -29,13 +28,7 @@ import Scope from './scope';
 import Context, { ContextError } from './worker/context';
 import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
-
-export function Require<T = any>(pather: string, cwd?: string) {
-  const moduleExports = path.isAbsolute(pather) 
-    ? require(pather) 
-    : require(path.resolve(cwd || process.cwd(), pather));
-  return moduleExports.__esModule && moduleExports.default ? <T>moduleExports.default : <T>moduleExports;
-}
+import Require from './helper/require';
 
 export interface NELTS_CONFIGS {
   cookie?: string[],
@@ -92,6 +85,7 @@ export {
   LRU,
   Scope,
   Extra,
+  Require,
   Plugin,
   Context,
   Component,

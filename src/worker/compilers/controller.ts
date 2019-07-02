@@ -10,7 +10,7 @@ import ajvChecker from '../../helper/ajv-checker';
 import * as statuses from 'statuses';
 import isJSON from '../../helper/is-json';
 import * as Stream from 'stream';
-import { Require } from '../../export';
+import Require from '../../helper/require';
 
 interface CONTROLLER_DECS {
   REQUEST_STATIC_VALIDATOR_HEADER: object,

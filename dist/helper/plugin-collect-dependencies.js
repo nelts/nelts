@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
-const export_1 = require("../export");
+const require_1 = require("../helper/require");
 function Collect(cwd, node_module_path, options) {
     const packageFilename = path.resolve(cwd, 'package.json');
     if (!fs.existsSync(packageFilename))
         throw new Error('connot find package.json');
-    const packageExports = export_1.Require(packageFilename);
+    const packageExports = require_1.default(packageFilename);
     if (!packageExports.plugin)
         packageExports.plugin = {};
     const moduleName = packageExports.name;

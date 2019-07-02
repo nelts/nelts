@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
 const plugin_1 = require("./plugin");
 exports.Plugin = plugin_1.default;
 const plugin_2 = require("./worker/plugin");
@@ -40,13 +39,8 @@ const context_1 = require("./worker/context");
 exports.Context = context_1.default;
 const json_schema_1 = require("./worker/extra/json-schema");
 const Body = require("@nelts/nelts-body");
-function Require(pather, cwd) {
-    const moduleExports = path.isAbsolute(pather)
-        ? require(pather)
-        : require(path.resolve(cwd || process.cwd(), pather));
-    return moduleExports.__esModule && moduleExports.default ? moduleExports.default : moduleExports;
-}
-exports.Require = Require;
+const require_1 = require("./helper/require");
+exports.Require = require_1.default;
 const Component = {
     Controller: controller_1.default,
     Service: service_1.default

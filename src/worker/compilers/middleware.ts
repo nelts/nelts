@@ -1,6 +1,6 @@
 import WorkerPlugin from '../plugin';
 import globby from 'globby';
-import { Require } from '../../export';
+import Require from '../../helper/require';
 export default async function Middleware(plugin: WorkerPlugin) {
   const cwd = plugin.source;
   const files = await globby([ 

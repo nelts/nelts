@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import EventEmitter from './helper/events';
-import { NELTS_CONFIGS, Require } from './export';
+import { NELTS_CONFIGS } from './export';
+import Require from './helper/require';
 import Factory from './factory';
 import { Compiler } from './compiler';
 

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const process_1 = require("@nelts/process");
-const export_1 = require("./export");
+const require_1 = require("./helper/require");
 const compiler_1 = require("./compiler");
 class Factory extends process_1.Component {
     constructor(processer, args) {
@@ -13,7 +13,7 @@ class Factory extends process_1.Component {
         this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
         this._env = args.env;
         if (args.config) {
-            this._configs = export_1.Require(args.config, this._base);
+            this._configs = require_1.default(args.config, this._base);
         }
     }
     get base() {

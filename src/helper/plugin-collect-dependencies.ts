@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Require } from '../export';
+import Require from '../helper/require';
 
 export interface COLLECT_OPTIONS {
   env: string,
