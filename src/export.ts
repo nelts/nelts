@@ -1,5 +1,9 @@
 import * as path from 'path';
 import Plugin from './plugin';
+import WorkerPlugin from './worker/plugin';
+import AgentPlugin from './agent/plugin';
+import WorkerApplciation from './worker/index';
+import AgentApplciation from './agent/index';
 import _component_controller from './worker/components/controller';
 import _component_service from './worker/components/service';
 import _decorator_prefix from './worker/decorators/router/prefix';
@@ -25,14 +29,6 @@ import Scope from './scope';
 import Context, { ContextError } from './worker/context';
 import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
-
-import WorkerPlugin from './worker/plugin';
-import AgentPlugin from './agent/plugin';
-import WorkerApplciation from './worker/index';
-import AgentApplciation from './agent/index';
-
-// export type WorkerPluginType = WorkerPlugin;
-// export type AgentPluginType = AgentPlugin<AgentApplciation>;
 
 export function Require<T = any>(pather: string, cwd?: string) {
   const moduleExports = path.isAbsolute(pather) 

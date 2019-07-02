@@ -1,4 +1,8 @@
 import Plugin from './plugin';
+import WorkerPlugin from './worker/plugin';
+import AgentPlugin from './agent/plugin';
+import WorkerApplciation from './worker/index';
+import AgentApplciation from './agent/index';
 import _component_controller from './worker/components/controller';
 import _component_service from './worker/components/service';
 import _decorator_prefix from './worker/decorators/router/prefix';
@@ -23,10 +27,6 @@ import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
 import Context, { ContextError } from './worker/context';
 import * as Body from '@nelts/nelts-body';
-import WorkerPlugin from './worker/plugin';
-import AgentPlugin from './agent/plugin';
-import WorkerApplciation from './worker/index';
-import AgentApplciation from './agent/index';
 export declare function Require<T = any>(pather: string, cwd?: string): T;
 export interface NELTS_CONFIGS {
     cookie?: string[];
