@@ -27,7 +27,7 @@ class Master extends process_1.Component {
         for (let i = 0; i < this._max; i++) {
             console.info('forking worker...');
             const worker = await this._forker();
-            console.info(`worker [pid:${worker.pid}] forked.`);
+            console.info(`worker [pid:${worker.pid}] forked.\n\n`);
         }
     }
     componentCatchError(err) {

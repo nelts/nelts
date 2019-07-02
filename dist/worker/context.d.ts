@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { IncomingMessage, ServerResponse } from "http";
 import * as Cookies from 'cookies';
-import Plugin from '../plugin';
+import Plugin from './plugin';
 declare type ParamSchema = {
     [name: string]: string;
 };

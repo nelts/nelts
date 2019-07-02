@@ -1,9 +1,9 @@
-import Plugin from './plugin';
-export default class Loader {
+export declare type Compiler<T> = (plugin: T) => Promise<void>;
+export default class Loader<T> {
     private plugins;
     private compilers;
     constructor();
-    addPlugin(plugin: Plugin): Loader;
-    addCompiler(compiler: (plugin: Plugin) => Promise<any>): Loader;
+    addPlugin(plugin: T): Loader<T>;
+    addCompiler(compiler: Compiler<T>): Loader<T>;
     run(): Promise<void>;
 }

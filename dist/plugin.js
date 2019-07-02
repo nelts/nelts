@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
 const path = require("path");
 const events_1 = require("./helper/events");
 const export_1 = require("./export");
-const fs = require("fs");
 class Plugin extends events_1.default {
     constructor(app, name, cwd) {
         super();
@@ -26,9 +26,6 @@ class Plugin extends events_1.default {
     get configs() {
         return this._configs;
     }
-    get server() {
-        return this._app.server;
-    }
     get app() {
         return this._app;
     }
@@ -50,7 +47,7 @@ class Plugin extends events_1.default {
         if (this._components.indexOf(name) > -1)
             return true;
         for (let i = 0; i < this._components.length; i++) {
-            const component = this.getComponent(this._components[i]);
+            const component = this._getComponent(this._components[i]);
             const res = component.isDepended(name);
             if (res)
                 return true;
@@ -67,7 +64,7 @@ class Plugin extends events_1.default {
             }
         });
     }
-    getComponent(name) {
+    _getComponent(name) {
         if (this._components.indexOf(name) === -1)
             throw new Error(`${name} is not depended on ${this.name}`);
         return this._app.plugins[name];

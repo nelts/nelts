@@ -1,5 +1,4 @@
-import Plugin from './plugin';
-export default function Scope(callback: (app: Plugin) => Function): {
-    (plugin: Plugin): Function;
+export default function Scope<T>(callback: (app: T) => Function): {
+    (plugin: T): Function;
     scoped: boolean;
 };

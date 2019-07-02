@@ -1,7 +1,7 @@
-import Plugin from '../../plugin';
+import WorkerPlugin from '../plugin';
 export default class Controller {
-  readonly app: Plugin;
-  constructor(plugin: Plugin) {
+  readonly app: WorkerPlugin;
+  constructor(plugin: WorkerPlugin) {
     this.app = plugin;
   }
 }

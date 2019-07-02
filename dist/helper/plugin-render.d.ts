@@ -1,3 +1,3 @@
-import Plugin from '../plugin';
-import Component from '../worker/index';
-export default function MakePluginRender(app: Component, isWorker: boolean): (component_path: string, root?: Plugin) => Promise<Plugin>;
+import WorkerPlugin from '../worker/plugin';
+import WorkerApplication from '../worker/index';
+export declare function MakeWorkerPluginRender(app: WorkerApplication): (component_path: string, root?: WorkerPlugin) => Promise<WorkerPlugin>;

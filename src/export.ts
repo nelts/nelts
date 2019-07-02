@@ -26,6 +26,14 @@ import Context, { ContextError } from './worker/context';
 import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
 
+import WorkerPlugin from './worker/plugin';
+import AgentPlugin from './agent/plugin';
+import WorkerApplciation from './worker/index';
+import AgentApplciation from './agent/index';
+
+// export type WorkerPluginType = WorkerPlugin;
+// export type AgentPluginType = AgentPlugin<AgentApplciation>;
+
 export function Require<T = any>(pather: string, cwd?: string) {
   const moduleExports = path.isAbsolute(pather) 
     ? require(pather) 
@@ -92,7 +100,11 @@ export {
   Context,
   Component,
   Decorator,
+  AgentPlugin,
+  WorkerPlugin,
   ContextError,
+  AgentApplciation,
+  WorkerApplciation,
   AsyncEventEmitter,
   AsyncEventEmitterListener,
 }

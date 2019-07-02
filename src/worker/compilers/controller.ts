@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import * as path from 'path';
-import Plugin from '../../plugin';
+import WorkerPlugin from '../plugin';
 import globby from 'globby';
 import Context from '../context';
 import DecoratorNameSpace from '../decorators/namespace';
@@ -25,7 +25,7 @@ interface CONTROLLER_DECS {
   RESPONSE: Compose.Middleware<Context>[],
 }
 
-export default async function Controller(plugin: Plugin) {
+export default async function Controller(plugin: WorkerPlugin) {
   const cwd = plugin.source;
   const files = await globby([
     'controller/**/*.ts', 
@@ -35,7 +35,7 @@ export default async function Controller(plugin: Plugin) {
   files.forEach((file: string) => render(plugin, path.resolve(cwd, file)));
 }
 
-function render(plugin: Plugin, file: string) {
+function render(plugin: WorkerPlugin, file: string) {
   let fileExports: any = Require(file);
   if (fileExports.scoped) fileExports = fileExports(plugin);
   const controllerPrefix = Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_PREFIX, fileExports) || '/';
@@ -95,7 +95,7 @@ function addComposeCallback(
   options: CONTROLLER_DECS, 
   controller: any, 
   property: PropertyKey, 
-  plugin: Plugin
+  plugin: WorkerPlugin
 ) {
   const callbacks: Compose.Middleware<Context>[] = [];
   // 校验 headers 和 querys 的参数是否合法

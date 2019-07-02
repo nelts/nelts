@@ -15,7 +15,7 @@ export default class Response {
     lastModified: string | Date | number;
     etag: string;
     readonly headerSent: boolean;
-    readonly app: import("..").Plugin;
+    readonly app: import("./plugin").default;
     readonly req: import("http").IncomingMessage;
     readonly request: import("./request").default;
     readonly header: import("http").OutgoingHttpHeaders;

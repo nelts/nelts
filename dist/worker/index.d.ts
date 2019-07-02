@@ -1,30 +1,19 @@
 /// <reference types="node" />
 import * as http from 'http';
-import Plugin from '../plugin';
-import Compiler from '../compiler';
 import * as Router from 'find-my-way';
-import { Component, Processer } from '@nelts/process';
-export declare type PLUGINS = {
-    [name: string]: Plugin;
-};
-export default class WorkerComponent extends Component {
-    private _base;
-    private _env;
-    private _plugins;
+import { Processer } from '@nelts/process';
+import Factory from '../factory';
+import WorkerPlugin from './plugin';
+export default class WorkerComponent extends Factory<WorkerPlugin> {
     private _app;
     private _port;
-    private _configs;
-    compiler: Compiler;
     server: http.Server;
-    render: (path: string) => Promise<Plugin>;
+    render: (path: string) => Promise<WorkerPlugin>;
     router: Router.Instance<Router.HTTPVersion.V1>;
     constructor(processer: Processer, args: {
         [name: string]: any;
     });
-    readonly app: Plugin;
-    readonly base: string;
-    readonly env: string;
-    readonly plugins: PLUGINS;
+    readonly app: WorkerPlugin;
     componentWillCreate(): Promise<void>;
     componentDidCreated(): Promise<void>;
     componentWillDestroy(): Promise<void>;

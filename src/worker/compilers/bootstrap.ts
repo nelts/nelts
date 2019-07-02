@@ -1,8 +1,8 @@
 import * as path from 'path';
-import Plugin from '../../plugin';
+import WorkerPlugin from '../plugin';
 import globby from 'globby';
 import { Require } from '../../export';
-export default async function Bootstrap(plugin: Plugin) {
+export default async function Bootstrap(plugin: WorkerPlugin) {
   const cwd = plugin.source;
   const files = await globby([ 
     'app.ts', 

@@ -32,6 +32,14 @@ const context_1 = require("./worker/context");
 exports.Context = context_1.default;
 const json_schema_1 = require("./worker/extra/json-schema");
 const Body = require("@nelts/nelts-body");
+const plugin_2 = require("./worker/plugin");
+exports.WorkerPlugin = plugin_2.default;
+const plugin_3 = require("./agent/plugin");
+exports.AgentPlugin = plugin_3.default;
+const index_1 = require("./worker/index");
+exports.WorkerApplciation = index_1.default;
+const index_2 = require("./agent/index");
+exports.AgentApplciation = index_2.default;
 function Require(pather, cwd) {
     const moduleExports = path.isAbsolute(pather)
         ? require(pather)

@@ -1,2 +1,2 @@
-import Plugin from '../../plugin';
-export default function Bootstrap(plugin: Plugin): Promise<void>;
+import WorkerPlugin from '../plugin';
+export default function Bootstrap(plugin: WorkerPlugin): Promise<void>;

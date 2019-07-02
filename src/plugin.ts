@@ -1,21 +1,21 @@
+import * as fs from 'fs';
 import * as path from 'path';
-import Component from './worker/index';
 import EventEmitter from './helper/events';
 import { NELTS_CONFIGS, Require } from './export';
-import * as fs from 'fs';
+import Factory from './factory';
+import { Compiler } from './compiler';
 
-export default class Plugin extends EventEmitter {
+export default class Plugin<M extends Factory<Plugin<M>>> extends EventEmitter {
   private _name: string;
   private _cwd: string;
-  private _app: Component;
+  private _app: M;
   private _env: string;
   private _source: string;
-  private _components: Array<string> = [];
+  private _components: string[] = [];
   private _configs: NELTS_CONFIGS;
-  public root: Plugin;
-  [name: string]: any;
+  public root: Plugin<M>;
 
-  constructor(app: Component, name: string, cwd: string) {
+  constructor(app: M, name: string, cwd: string) {
     super();
     this._app = app;
     this._name = name;
@@ -34,10 +34,6 @@ export default class Plugin extends EventEmitter {
 
   get configs() {
     return this._configs;
-  }
-
-  get server() {
-    return this._app.server;
   }
 
   get app() {
@@ -64,13 +60,13 @@ export default class Plugin extends EventEmitter {
     if (!this._components.length) return;
     if (this._components.indexOf(name) > -1) return true;
     for (let i = 0; i < this._components.length; i++) {
-      const component = this.getComponent(this._components[i]);
+      const component = this._getComponent(this._components[i]);
       const res = component.isDepended(name);
       if (res) return true;
     }
   }
 
-  addCompiler(compiler: (plugin: Plugin) => Promise<any>): Plugin {
+  addCompiler<T extends Plugin<M>>(compiler: Compiler<T>) {
     this._app.compiler.addCompiler(compiler);
     return this;
   }
@@ -83,9 +79,9 @@ export default class Plugin extends EventEmitter {
     });
   }
 
-  getComponent(name: string) {
+  _getComponent<T extends Plugin<M>>(name: string) {
     if (this._components.indexOf(name) === -1) throw new Error(`${name} is not depended on ${this.name}`);
-    return this._app.plugins[name];
+    return <T>this._app.plugins[name];
   }
 
   async props(configs: NELTS_CONFIGS) {
@@ -95,7 +91,7 @@ export default class Plugin extends EventEmitter {
     await this.emit('props', this._configs);
   }
 
-  async broadcast(name: string, ...args:any[]) {
+  async broadcast(name: string, ...args: any[]) {
     await this.emit(name, ...args);
     for (let i = 0; i < this._components.length; i++) {
       const componentName = this._components[i];

@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
 import * as Cookies from 'cookies';
-import Plugin from '../plugin';
+import Plugin from './plugin';
 type ParamSchema = { [name: string]: string };
 import Request from './request';
 import Response, { fieldObjectSchema, fieldValueSchema } from './response';

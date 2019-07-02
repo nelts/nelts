@@ -33,7 +33,7 @@ export default class Request {
     readonly url: string;
     readonly origin: string;
     readonly protocol: string;
-    readonly app: import("..").Plugin;
+    readonly app: import("./plugin").default;
     readonly res: import("http").ServerResponse;
     readonly response: import("./response").default;
     get(field: string): string | string[];

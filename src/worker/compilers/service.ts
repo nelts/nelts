@@ -1,7 +1,7 @@
-import Plugin from '../../plugin';
+import WorkerPlugin from '../plugin';
 import globby from 'globby';
 import { Require } from '../../export';
-export default async function Service(plugin: Plugin) {
+export default async function Service(plugin: WorkerPlugin) {
   const cwd = plugin.source;
   const files = await globby([ 
     'service/**/*.ts', 
