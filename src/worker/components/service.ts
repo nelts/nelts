@@ -1,10 +1,10 @@
 import Component from './base';
 import Context from '../context';
 
-export default class Service extends Component {
-  readonly ctx: Context;
+export default class Service<T extends Context> extends Component {
+  readonly ctx: T;
 
-  constructor(ctx: Context) {
+  constructor(ctx: T) {
     super(ctx.app);
     this.ctx = ctx;
   }
