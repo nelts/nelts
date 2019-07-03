@@ -10,6 +10,7 @@ export default class Master extends Component {
   private _base: string;
   private _max: number;
   private _config: string;
+  private _port: number;
   private _forker: () => Promise<any>;
 
   constructor(processer: Processer, args: { [name:string]: any }) {
@@ -18,12 +19,13 @@ export default class Master extends Component {
     const max = Number(args.max || os.cpus().length);
     if (!fs.existsSync(base)) throw new Error('base cwd is not exists.');
     this._base = base;
+    this._port = Number(args.port || 8080);
     this._config = args.config;
     this._max = max;
   }
 
   async componentWillCreate() {
-    this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config });
+    this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
   }
 
   async componentDidCreated() {
