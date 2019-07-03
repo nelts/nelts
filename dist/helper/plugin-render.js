@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
 const plugin_1 = require("../worker/plugin");
 const plugin_collect_dependencies_1 = require("./plugin-collect-dependencies");
+const find_node_modules_1 = require("./find-node-modules");
 function MakeWorkerPluginRender(app) {
     const base = app.base;
-    const node_module_path = path.resolve(base, 'node_modules');
-    if (!fs.existsSync(node_module_path))
+    let node_module_paths = find_node_modules_1.default({ cwd: base, relative: false });
+    if (!node_module_paths.length)
         throw new Error('cannot find node_modules path');
+    const node_module_path = node_module_paths[0];
     async function dispatch(component_path, root) {
         const { name, dependenties } = plugin_collect_dependencies_1.default(component_path, node_module_path, { env: app.env, isWorker: true });
         if (!app.plugins[name])

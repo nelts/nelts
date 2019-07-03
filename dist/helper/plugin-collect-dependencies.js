@@ -6,7 +6,7 @@ const require_1 = require("../helper/require");
 function Collect(cwd, node_module_path, options) {
     const packageFilename = path.resolve(cwd, 'package.json');
     if (!fs.existsSync(packageFilename))
-        throw new Error('connot find package.json');
+        throw new Error('cannot find package.json');
     const packageExports = require_1.default(packageFilename);
     if (!packageExports.plugin)
         packageExports.plugin = {};

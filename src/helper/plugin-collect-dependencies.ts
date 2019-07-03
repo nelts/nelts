@@ -24,7 +24,7 @@ export interface PLUGIN_COLLECT_RESULT {
 
 export default function Collect(cwd: string, node_module_path: string, options: COLLECT_OPTIONS): PLUGIN_COLLECT_RESULT {
   const packageFilename = path.resolve(cwd, 'package.json');
-  if (!fs.existsSync(packageFilename)) throw new Error('connot find package.json');
+  if (!fs.existsSync(packageFilename)) throw new Error('cannot find package.json');
   const packageExports = Require(packageFilename);
   if (!packageExports.plugin) packageExports.plugin = {};
   const moduleName = packageExports.name;
