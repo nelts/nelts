@@ -41,6 +41,8 @@ const json_schema_1 = require("./worker/extra/json-schema");
 const Body = require("@nelts/nelts-body");
 const require_1 = require("./helper/require");
 exports.Require = require_1.default;
+const request_response_compose_1 = require("./helper/request-response-compose");
+exports.UsedCompose = request_response_compose_1.default;
 const Component = {
     Controller: controller_1.default,
     Service: service_1.default

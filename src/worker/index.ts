@@ -2,6 +2,8 @@ import * as http from 'http';
 import { MakeWorkerPluginRender } from '../helper/plugin-render';
 import * as Router from 'find-my-way';
 import { Processer } from '@nelts/process';
+import Compose, { Middleware, ComposedMiddleware } from '../helper/request-response-compose';
+import { ContextError } from './context';
 
 import Factory from '../factory';
 import WorkerPlugin from './plugin';
@@ -14,6 +16,8 @@ import ServiceCompiler from './compilers/service';
 export default class WorkerComponent extends Factory<WorkerPlugin> {
   private _app: WorkerPlugin;
   private _port: number;
+  private _middlewares: Middleware[];
+  private _handler: ComposedMiddleware;
   public server: http.Server;
   public render: (path: string) => Promise<WorkerPlugin>;
   public router: Router.Instance<Router.HTTPVersion.V1>;
@@ -22,6 +26,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     console.info(`[pid:${process.pid}] server opening...`);
     super(processer, args);
     this._port = Number(args.port || 8080);
+    this._middlewares = [];
     this.router = Router({
       ignoreTrailingSlash: true,
       defaultRoute(req, res) {
@@ -29,6 +34,11 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
         res.end();
       }
     });
+  }
+
+  use(...args: Middleware[]) {
+    this._middlewares.push(...args);
+    return this;
   }
 
   get app() {
@@ -43,10 +53,9 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     this.compiler.addCompiler(ControllerCompiler);
     this.compiler.addCompiler(BootstrapCompiler);
     this.server = http.createServer((req, res) => {
-      this._app.broadcast('ServerRequest', req, res)
-      .then(() => this.router.lookup(req, res))
-      .catch(e => {
-        res.statusCode = 500;
+      this._handler(req, res).catch((e: ContextError) => {
+        if (res.headersSent) return;
+        res.statusCode = e.status || 500;
         res.end(e.message);
       });
     });
@@ -55,6 +64,11 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   async componentDidCreated() {
     await this.compiler.run();
     if (this.configs) this._app.props(this.configs);
+    this._middlewares.push(async (req, res, next) => {
+      await this.router.lookup(req, res);
+      await next();
+    });
+    this._handler = Compose(this._middlewares);
     await new Promise((resolve, reject) => {
       this.server.listen(this._port, (err?: Error) => {
         if (err) return reject(err);

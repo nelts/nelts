@@ -29,6 +29,7 @@ import Context, { ContextError } from './worker/context';
 import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
 import Require from './helper/require';
+import UsedCompose, { NextCallback, Middleware, ComposedMiddleware } from './helper/request-response-compose';
 
 export interface NELTS_CONFIGS {
   cookie?: string[],
@@ -90,11 +91,15 @@ export {
   Context,
   Component,
   Decorator,
+  Middleware,
   AgentPlugin,
+  UsedCompose,
   WorkerPlugin,
   ContextError,
+  NextCallback,
   AgentApplciation,
   WorkerApplciation,
   AsyncEventEmitter,
+  ComposedMiddleware,
   AsyncEventEmitterListener,
 }
