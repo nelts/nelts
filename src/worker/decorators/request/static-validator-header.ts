@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import ControllerComponent from '../../components/controller';
+// import ControllerComponent from '../../components/controller';
 import DecoratorNameSpace from '../namespace';
 import AjvStringFormater from '../../../helper/ajv-string-formater';
 
@@ -14,13 +14,9 @@ import AjvStringFormater from '../../../helper/ajv-string-formater';
  *    '?test4[]'
  *  )`
  */
-export default function StaticValidatorHeader(...args: object[] | string[]) {
+export default function StaticValidatorHeader(...args: object[] | string[]): MethodDecorator {
   const types = AjvStringFormater(args);
-  return (
-    target: ControllerComponent, 
-    property: string, 
-    descriptor: PropertyDescriptor
-  ) => {
+  return (target, property, descriptor) => {
     Reflect.defineMetadata(DecoratorNameSpace.CONTROLLER_STATIC_VALIDATOR_HEADER, types, descriptor.value);
   }
 }

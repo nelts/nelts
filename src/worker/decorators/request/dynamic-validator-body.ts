@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import ControllerComponent from '../../components/controller';
+// import ControllerComponent from '../../components/controller';
 import DecoratorNameSpace from '../namespace';
 
 /**
@@ -8,12 +8,8 @@ import DecoratorNameSpace from '../namespace';
  * @example
  *  `Decorator.Controller.Request.Dynamic.Validator.Body({...})`
  */
-export default function DynamicValidatorBody(schema: object) {
-  return (
-    target: ControllerComponent, 
-    property: string, 
-    descriptor: PropertyDescriptor
-  ) => {
+export default function DynamicValidatorBody(schema: object): MethodDecorator {
+  return (target, property, descriptor) => {
     Reflect.defineMetadata(DecoratorNameSpace.CONTROLLER_DYNAMIC_VALIDATOR_BODY, schema, descriptor.value);
   }
 }

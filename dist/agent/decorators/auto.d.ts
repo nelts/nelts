@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import Component from '../components/base';
-declare const _default: (target: Component, property: string, descriptor: PropertyDescriptor) => void;
+declare const _default: ClassDecorator;
 export default _default;
