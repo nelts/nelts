@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 let id = 1;
 class Messager {
-    constructor(app) {
+    constructor(app, mpid) {
         this.app = app;
         this._stacks = {};
+        this.mpid = mpid;
     }
     parse(id, code, data) {
         if (!this._stacks[id])
@@ -28,7 +29,7 @@ class Messager {
     }
     send(method, data, options) {
         if (!options)
-            options = 'master';
+            options = this.mpid;
         if (typeof options !== 'object') {
             options = {
                 to: options,
@@ -37,7 +38,7 @@ class Messager {
         const _id = id++;
         process.send({
             id: _id,
-            to: options.to || 'master',
+            to: options.to || this.mpid,
             from: process.pid,
             method, data,
         }, options.socket);

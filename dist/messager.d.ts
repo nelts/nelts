@@ -13,8 +13,9 @@ export declare type ProcessMessageReceiveDataType = {
 };
 export default class Messager<T> {
     private app;
+    mpid: number;
     private _stacks;
-    constructor(app: T);
+    constructor(app: T, mpid: number);
     parse(id: number, code: ipcStatus, data: any): void;
     createAgent(name: any, file: string, args?: any): Promise<unknown>;
     send(method: string, data: any, options?: ProcessMessageSendOptions): number;

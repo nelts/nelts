@@ -23,7 +23,7 @@ export default class AgentComponent extends Factory<AgentPlugin> {
     this._targetConstructor = target;
     this._name = args.name;
     this._target = new target(this);
-    this.messager = new Messager<AgentComponent>(this);
+    this.messager = new Messager<AgentComponent>(this, args.mpid);
   }
 
   async componentWillCreate() {

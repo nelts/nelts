@@ -13,10 +13,12 @@ let id = 1;
 
 export default class Messager<T> {
   private app: T;
+  public mpid: number;
   private _stacks: { [name: string]: [(value?: unknown) => void, (reason?: any) => void] };
-  constructor(app: T) {
+  constructor(app: T, mpid: number) {
     this.app = app;
     this._stacks = {};
+    this.mpid = mpid;
   }
 
   parse(id: number, code: ipcStatus, data: any) {
@@ -40,7 +42,7 @@ export default class Messager<T> {
   }
 
   send(method: string, data: any, options?: ProcessMessageSendOptions) {
-    if (!options) options = 'master';
+    if (!options) options = this.mpid;
     if (typeof options !== 'object') {
       options = {
         to: options,
@@ -49,7 +51,7 @@ export default class Messager<T> {
     const _id = id++;
     process.send({
       id: _id,
-      to: options.to || 'master',
+      to: options.to || this.mpid,
       from: process.pid,
       method, data,
     }, options.socket);

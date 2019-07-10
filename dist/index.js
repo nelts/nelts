@@ -25,7 +25,7 @@ class Master extends process_1.Component {
         this._port = Number(args.port || 8080);
         this._config = args.config;
         this._max = max;
-        this._messager = new messager_1.default(this);
+        this._messager = new messager_1.default(this, args.mpid);
     }
     async componentWillCreate() {
         this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
@@ -36,8 +36,11 @@ class Master extends process_1.Component {
             const worker = await this._forker();
             console.info(`worker [pid:${worker.pid}] forked.\n\n`);
         }
-        this.messager.send('__master:done__', null, {
-            to: this.processer.workers[0].pid
+        this.processer.workers[0].send({
+            id: -1,
+            to: this.processer.workers[0].pid,
+            from: process.pid,
+            method: '__master:done__',
         });
     }
     componentCatchError(err) {
@@ -46,7 +49,7 @@ class Master extends process_1.Component {
     componentReceiveMessage(message, socket) {
         const to = message.to;
         switch (to) {
-            case 'master':
+            case this.messager.mpid:
                 this.masterMessageConvert(message, socket);
                 break;
             default:
@@ -74,11 +77,12 @@ class Master extends process_1.Component {
                 }
                 else {
                     const startCreateAgentTime = Date.now();
-                    this.createAgent(message.data.name, agentScriptFilename, Object.assign(message.data.args, {
+                    this.createAgent(message.data.name, agentScriptFilename, Object.assign(message.data.args || {}, {
                         base: this._base,
                         config: this._config,
                         file: message.data.file,
                         name: message.data.name,
+                        mpid: this.messager.mpid,
                     }))
                         .then(() => reply({ code: 0, time: Date.now() - startCreateAgentTime }))
                         .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));

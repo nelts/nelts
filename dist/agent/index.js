@@ -14,7 +14,7 @@ class AgentComponent extends factory_1.default {
         this._targetConstructor = target;
         this._name = args.name;
         this._target = new target(this);
-        this.messager = new messager_1.default(this);
+        this.messager = new messager_1.default(this, args.mpid);
     }
     async componentWillCreate() {
         this.render = plugin_render_1.MakeAgentPluginRender(this._name, this);

@@ -17,7 +17,7 @@ class WorkerComponent extends factory_1.default {
         super(processer, args);
         this._port = Number(args.port || 8080);
         this._middlewares = [];
-        this.messager = new messager_1.default(this);
+        this.messager = new messager_1.default(this, args.mpid);
         this.router = Router({
             ignoreTrailingSlash: true,
             defaultRoute(req, res) {
@@ -90,7 +90,9 @@ class WorkerComponent extends factory_1.default {
             }
             else {
                 switch (message.method) {
-                    case '__master:done__': this._app.broadcast('ready');
+                    case '__master:done__':
+                        this._app.broadcast('ready');
+                        break;
                     default: throw new Error('No support actions on ipc receiver');
                 }
             }

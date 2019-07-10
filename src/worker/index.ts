@@ -30,7 +30,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     super(processer, args);
     this._port = Number(args.port || 8080);
     this._middlewares = [];
-    this.messager = new Messager<WorkerComponent>(this);
+    this.messager = new Messager<WorkerComponent>(this, args.mpid);
     this.router = Router({
       ignoreTrailingSlash: true,
       defaultRoute(req, res) {
@@ -107,7 +107,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
         this.messager.parse(message.id, message.code, message.data);
       } else {
         switch (message.method) {
-          case '__master:done__': this._app.broadcast('ready');
+          case '__master:done__': this._app.broadcast('ready'); break;
           default: throw new Error('No support actions on ipc receiver');
         }
       }

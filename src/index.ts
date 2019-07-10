@@ -29,7 +29,7 @@ export default class Master extends Component {
     this._port = Number(args.port || 8080);
     this._config = args.config;
     this._max = max;
-    this._messager = new Messager<Master>(this);
+    this._messager = new Messager<Master>(this, args.mpid);
   }
 
   async componentWillCreate() {
@@ -42,16 +42,14 @@ export default class Master extends Component {
       const worker = await this._forker();
       console.info(`worker [pid:${worker.pid}] forked.\n\n`);
     }
-    this.messager.send('__master:done__', null, {
-      to: this.processer.workers[0].pid
+    this.processer.workers[0].send({
+      id: -1,
+      to: this.processer.workers[0].pid,
+      from: process.pid,
+      method: '__master:done__',
     });
   }
-  // async componentWillDestroy() {
-  //   console.log(3)
-  // }
-  // async componentDidDestroyed() {
-  //   console.log(4)
-  // }
+
   componentCatchError(err: Error) {
     console.error(err);
   }
@@ -60,7 +58,7 @@ export default class Master extends Component {
     const to = message.to;
 
     switch (to) {
-      case 'master': 
+      case this.messager.mpid: 
         this.masterMessageConvert(message, socket);
         break;
       default:
@@ -84,11 +82,12 @@ export default class Master extends Component {
           reply({ code: 0, time: 0 });
         } else {
           const startCreateAgentTime = Date.now();
-          this.createAgent(message.data.name, agentScriptFilename, Object.assign(message.data.args, {
+          this.createAgent(message.data.name, agentScriptFilename, Object.assign(message.data.args || {}, {
             base: this._base, 
             config: this._config,
             file: message.data.file,
             name: message.data.name,
+            mpid: this.messager.mpid,
           }))
           .then(() => reply({ code: 0, time: Date.now() - startCreateAgentTime }))
           .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
