@@ -7,6 +7,7 @@ import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import * as util from 'util';
 import AsyncEventEmitter from '../helper/events';
 import { ContextError } from './context';
+import { ProcessMessageSendOptions } from '../messager';
 
 type StackCallback = () => PromiseLike<void>;
 type StackStatus = 0 | 1 | 2;
@@ -47,6 +48,18 @@ export default class Context extends AsyncEventEmitter {
       keys: app.configs.cookie || ['nelts', 'context'],
       secure: this.request.secure,
     });
+  }
+
+  get messager() {
+    return this.app.app.messager;
+  }
+
+  send(method: string, data: any, options?: ProcessMessageSendOptions) {
+    return this.messager.send(method, data, options);
+  }
+
+  asyncSend(method: string, data: any, options?: ProcessMessageSendOptions) {
+    return this.messager.asyncSend(method, data, options);
   }
 
   stash(fn: StackCallback) {

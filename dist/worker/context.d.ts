@@ -9,6 +9,7 @@ import Request from './request';
 import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import AsyncEventEmitter from '../helper/events';
 import { ContextError } from './context';
+import { ProcessMessageSendOptions } from '../messager';
 declare type StackCallback = () => PromiseLike<void>;
 export interface ContextError extends Error {
     status?: number;
@@ -29,6 +30,9 @@ export default class Context extends AsyncEventEmitter {
     respond: boolean;
     [label: string]: any;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
+    readonly messager: import("../messager").default<import(".").default>;
+    send(method: string, data: any, options?: ProcessMessageSendOptions): number;
+    asyncSend(method: string, data: any, options?: ProcessMessageSendOptions): Promise<unknown>;
     stash(fn: StackCallback): this;
     commit(): Promise<void>;
     rollback(e: ContextError): Promise<void>;

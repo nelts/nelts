@@ -20,7 +20,7 @@ export default async function Bootstrap(plugin: WorkerPlugin) {
       callback.__filename = callback.name;
       if (Auto) {
         if (!callback.__filename) throw new Error('agent must defined with a name.');
-        await plugin.app.messager.createAgent(callback.__filename, callback.__filepath);
+        plugin.on('ready', () => plugin.app.messager.createAgent(callback.__filename, callback.__filepath));
       }
     }
   }

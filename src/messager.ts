@@ -1,5 +1,6 @@
 type ipcStatus = 0 | 1;
-export type ProcessMessageSendOptions = string | number | { to?: string | number, socket?: any };
+type MessageSendOptions = { to?: string | number, socket?: any, timeout?: number };
+export type ProcessMessageSendOptions = string | number | MessageSendOptions;
 export type ProcessMessageReceiveDataType = {
   id: number,
   to: string | number,
@@ -66,7 +67,7 @@ export default class Messager<T> {
           delete this._stacks[_id];
           reject(new Error('ipc request timeout:' + _id));
         }
-      }, 20000);
+      }, (<MessageSendOptions>options).timeout || 20000);
       const resolver = (value?: unknown) => {
         clearTimeout(timer);
         delete this._stacks[_id];

@@ -7,12 +7,16 @@ export default class Agent {
     this.app = app;
   }
 
+  get messager() {
+    return this.app.messager;
+  }
+
   send(method: string, data: any, options?: ProcessMessageSendOptions) {
-    return this.app.messager.send(method, data, options);
+    return this.messager.send(method, data, options);
   }
 
   asyncSend(method: string, data: any, options?: ProcessMessageSendOptions) {
-    return this.app.messager.asyncSend(method, data, options);
+    return this.messager.asyncSend(method, data, options);
   }
 
   kill() {

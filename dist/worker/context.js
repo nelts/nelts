@@ -22,6 +22,15 @@ class Context extends events_1.default {
             secure: this.request.secure,
         });
     }
+    get messager() {
+        return this.app.app.messager;
+    }
+    send(method, data, options) {
+        return this.messager.send(method, data, options);
+    }
+    asyncSend(method, data, options) {
+        return this.messager.asyncSend(method, data, options);
+    }
     stash(fn) {
         this._stacks.push(fn);
         return this;

@@ -1,8 +1,10 @@
 declare type ipcStatus = 0 | 1;
-export declare type ProcessMessageSendOptions = string | number | {
+declare type MessageSendOptions = {
     to?: string | number;
     socket?: any;
+    timeout?: number;
 };
+export declare type ProcessMessageSendOptions = string | number | MessageSendOptions;
 export declare type ProcessMessageReceiveDataType = {
     id: number;
     to: string | number;

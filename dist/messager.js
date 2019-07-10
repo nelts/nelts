@@ -52,7 +52,7 @@ class Messager {
                     delete this._stacks[_id];
                     reject(new Error('ipc request timeout:' + _id));
                 }
-            }, 20000);
+            }, options.timeout || 20000);
             const resolver = (value) => {
                 clearTimeout(timer);
                 delete this._stacks[_id];
