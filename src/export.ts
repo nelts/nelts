@@ -25,6 +25,7 @@ import _decorator_middleware from './worker/decorators/middleware';
 import _decorator_response from './worker/decorators/response';
 import _decorator_ipc from './agent/decorators/ipc';
 import _decorator_feedback from './agent/decorators/feedback';
+import _decorator_auto from './agent/decorators/auto';
 import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
@@ -80,7 +81,8 @@ const Decorator = {
     Middleware: _decorator_middleware,
   },
   Ipc: _decorator_ipc,
-  Feedback: _decorator_feedback
+  Feedback: _decorator_feedback,
+  Auto: _decorator_auto
 };
 
 const Extra = {

@@ -74,6 +74,7 @@ declare const Decorator: {
     };
     Ipc: (target: _component_agent, property: string, descriptor: PropertyDescriptor) => void;
     Feedback: (target: _component_agent, property: string, descriptor: PropertyDescriptor) => void;
+    Auto: (target: _component_agent, property: string, descriptor: PropertyDescriptor) => void;
 };
 declare const Extra: {
     JSON_SCHEMA: (schema: import("fast-json-stringify").Schema) => (ctx: Context, next: Function) => Promise<any>;
