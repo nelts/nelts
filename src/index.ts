@@ -42,6 +42,9 @@ export default class Master extends Component {
       const worker = await this._forker();
       console.info(`worker [pid:${worker.pid}] forked.\n\n`);
     }
+    this.messager.send('__master:done__', null, {
+      to: this.processer.workers[0].pid
+    });
   }
   // async componentWillDestroy() {
   //   console.log(3)

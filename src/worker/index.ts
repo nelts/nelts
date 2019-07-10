@@ -106,7 +106,10 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
       if (!message.method && message.id && [0, 1].includes(message.code)) {
         this.messager.parse(message.id, message.code, message.data);
       } else {
-        throw new Error('No support actions on ipc receiver');
+        switch (message.method) {
+          case '__master:done__': this._app.broadcast('ready');
+          default: throw new Error('No support actions on ipc receiver');
+        }
       }
     }
   }

@@ -36,6 +36,9 @@ class Master extends process_1.Component {
             const worker = await this._forker();
             console.info(`worker [pid:${worker.pid}] forked.\n\n`);
         }
+        this.messager.send('__master:done__', null, {
+            to: this.processer.workers[0].pid
+        });
     }
     componentCatchError(err) {
         console.error(err);
