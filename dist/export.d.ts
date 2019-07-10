@@ -3,6 +3,7 @@ import WorkerPlugin from './worker/plugin';
 import AgentPlugin from './agent/plugin';
 import WorkerApplciation from './worker/index';
 import AgentApplciation from './agent/index';
+import _component_agent from './agent/components/base';
 import _component_controller from './worker/components/controller';
 import _component_service from './worker/components/service';
 import _decorator_prefix from './worker/decorators/router/prefix';
@@ -39,6 +40,7 @@ export declare type CustomExtendableType<T> = {
 declare const Component: {
     Controller: typeof _component_controller;
     Service: typeof _component_service;
+    Agent: typeof _component_agent;
 };
 declare const Decorator: {
     Controller: {
@@ -70,6 +72,8 @@ declare const Decorator: {
         Response: typeof _decorator_response;
         Middleware: typeof _decorator_middleware;
     };
+    Ipc: (target: _component_agent, property: string, descriptor: PropertyDescriptor) => void;
+    Feedback: (target: _component_agent, property: string, descriptor: PropertyDescriptor) => void;
 };
 declare const Extra: {
     JSON_SCHEMA: (schema: import("fast-json-stringify").Schema) => (ctx: Context, next: Function) => Promise<any>;

@@ -7,9 +7,14 @@ const os = require("os");
 const fs = require("fs");
 const path = require("path");
 const process_1 = require("@nelts/process");
+const messager_1 = require("./messager");
 __export(require("./export"));
 const workScriptFilename = path.resolve(__dirname, './worker/index');
+const agentScriptFilename = path.resolve(__dirname, './agent/index');
 class Master extends process_1.Component {
+    get messager() {
+        return this._messager;
+    }
     constructor(processer, args) {
         super(processer, args);
         const base = args.base ? path.resolve(args.base || '.') : args.cwd;
@@ -20,6 +25,7 @@ class Master extends process_1.Component {
         this._port = Number(args.port || 8080);
         this._config = args.config;
         this._max = max;
+        this._messager = new messager_1.default(this);
     }
     async componentWillCreate() {
         this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
@@ -34,6 +40,63 @@ class Master extends process_1.Component {
     componentCatchError(err) {
         console.error(err);
     }
-    componentReceiveMessage(message, socket) { }
+    componentReceiveMessage(message, socket) {
+        const to = message.to;
+        switch (to) {
+            case 'master':
+                this.masterMessageConvert(message, socket);
+                break;
+            default:
+                if (typeof to === 'string') {
+                    if (!this.processer.agents[to])
+                        throw new Error('cannot find the agent name of ' + to);
+                    this.processer.agents[to].send(message, socket);
+                }
+                else if (typeof to === 'number') {
+                    if (!this.processer.pids[to])
+                        throw new Error('cannot find the process pid of ' + to);
+                    this.processer.pids[to].send(message, socket);
+                }
+                else {
+                    throw new Error('message.to is invaild type, only can be string or number.');
+                }
+        }
+    }
+    masterMessageConvert(message, socket) {
+        const reply = this.createReply(message, socket);
+        switch (message.method) {
+            case 'newAgent':
+                if (this.processer.agents[message.data.name]) {
+                    reply({ code: 0, time: 0 });
+                }
+                else {
+                    const startCreateAgentTime = Date.now();
+                    this.createAgent(message.data.name, agentScriptFilename, Object.assign(message.data.args, {
+                        base: this._base,
+                        config: this._config,
+                        file: message.data.file,
+                        name: message.data.name,
+                    }))
+                        .then(() => reply({ code: 0, time: Date.now() - startCreateAgentTime }))
+                        .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
+                }
+                break;
+            default: throw new Error('cannot find the master.message.convert:' + message.method);
+        }
+    }
+    createReply(message, socket) {
+        const from = this.processer.pids[message.from];
+        if (!from)
+            throw new Error('cannot find the process of ' + message.from);
+        return (data) => {
+            from.send({
+                id: message.id,
+                to: message.from,
+                from: process.pid,
+                data,
+                code: data.code,
+            }, socket);
+        };
+    }
 }
 exports.default = Master;

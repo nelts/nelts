@@ -4,6 +4,7 @@ import * as Router from 'find-my-way';
 import { Processer } from '@nelts/process';
 import Compose, { Middleware, ComposedMiddleware } from '../helper/request-response-compose';
 import { ContextError } from './context';
+import Messager, { ProcessMessageReceiveDataType } from '../messager';
 
 import Factory from '../factory';
 import WorkerPlugin from './plugin';
@@ -12,6 +13,7 @@ import BootstrapCompiler from './compilers/bootstrap';
 import ControllerCompiler from './compilers/controller';
 import MiddlewareCompiler from './compilers/middleware';
 import ServiceCompiler from './compilers/service';
+import AgentCompiler from './compilers/agent';
 
 export default class WorkerComponent extends Factory<WorkerPlugin> {
   private _app: WorkerPlugin;
@@ -21,12 +23,14 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   public server: http.Server;
   public render: (path: string) => Promise<WorkerPlugin>;
   public router: Router.Instance<Router.HTTPVersion.V1>;
+  public messager: Messager<WorkerComponent>;
 
   constructor(processer: Processer, args: { [name:string]: any }) {
     console.info(`[pid:${process.pid}] server opening...`);
     super(processer, args);
     this._port = Number(args.port || 8080);
     this._middlewares = [];
+    this.messager = new Messager<WorkerComponent>(this);
     this.router = Router({
       ignoreTrailingSlash: true,
       defaultRoute(req, res) {
@@ -48,6 +52,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   async componentWillCreate() {
     this.render = MakeWorkerPluginRender(this);
     this._app = await this.render(this.base);
+    this.compiler.addCompiler(AgentCompiler);
     this.compiler.addCompiler(MiddlewareCompiler);
     this.compiler.addCompiler(ServiceCompiler);
     this.compiler.addCompiler(ControllerCompiler);
@@ -63,7 +68,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
 
   async componentDidCreated() {
     await this.compiler.run();
-    if (this.configs) this._app.props(this.configs);
+    if (this.configs) await this._app.props(this.configs);
     this._middlewares.push(async (req, res, next) => {
       await this.router.lookup(req, res);
       await next();
@@ -94,5 +99,15 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     console.error(err);
   }
 
-  componentReceiveMessage(message:any, socket?:any) {}
+  componentReceiveMessage(message:ProcessMessageReceiveDataType, socket?:any) {
+    const name = message.to;
+    const pid = process.pid;
+    if (name === pid) {
+      if (!message.method && message.id && [0, 1].includes(message.code)) {
+        this.messager.parse(message.id, message.code, message.data);
+      } else {
+        throw new Error('No support actions on ipc receiver');
+      }
+    }
+  }
 }

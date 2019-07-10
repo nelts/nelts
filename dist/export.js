@@ -10,6 +10,7 @@ const index_1 = require("./worker/index");
 exports.WorkerApplciation = index_1.default;
 const index_2 = require("./agent/index");
 exports.AgentApplciation = index_2.default;
+const base_1 = require("./agent/components/base");
 const controller_1 = require("./worker/components/controller");
 const service_1 = require("./worker/components/service");
 const prefix_1 = require("./worker/decorators/router/prefix");
@@ -29,6 +30,8 @@ const dynamic_filter_1 = require("./worker/decorators/request/dynamic-filter");
 const guard_1 = require("./worker/decorators/request/guard");
 const middleware_1 = require("./worker/decorators/middleware");
 const response_1 = require("./worker/decorators/response");
+const ipc_1 = require("./agent/decorators/ipc");
+const feedback_1 = require("./agent/decorators/feedback");
 const lru_1 = require("./helper/lru");
 exports.LRU = lru_1.default;
 const events_1 = require("./helper/events");
@@ -45,7 +48,8 @@ const request_response_compose_1 = require("./helper/request-response-compose");
 exports.UsedCompose = request_response_compose_1.default;
 const Component = {
     Controller: controller_1.default,
-    Service: service_1.default
+    Service: service_1.default,
+    Agent: base_1.default
 };
 exports.Component = Component;
 const Decorator = {
@@ -77,7 +81,9 @@ const Decorator = {
         Guard: guard_1.default,
         Response: response_1.default,
         Middleware: middleware_1.default,
-    }
+    },
+    Ipc: ipc_1.default,
+    Feedback: feedback_1.default
 };
 exports.Decorator = Decorator;
 const Extra = {

@@ -3,6 +3,7 @@ import * as http from 'http';
 import * as Router from 'find-my-way';
 import { Processer } from '@nelts/process';
 import { Middleware } from '../helper/request-response-compose';
+import Messager, { ProcessMessageReceiveDataType } from '../messager';
 import Factory from '../factory';
 import WorkerPlugin from './plugin';
 export default class WorkerComponent extends Factory<WorkerPlugin> {
@@ -13,6 +14,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     server: http.Server;
     render: (path: string) => Promise<WorkerPlugin>;
     router: Router.Instance<Router.HTTPVersion.V1>;
+    messager: Messager<WorkerComponent>;
     constructor(processer: Processer, args: {
         [name: string]: any;
     });
@@ -23,5 +25,5 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     componentWillDestroy(): Promise<void>;
     componentDidDestroyed(): Promise<void>;
     componentCatchError(err: Error): void;
-    componentReceiveMessage(message: any, socket?: any): void;
+    componentReceiveMessage(message: ProcessMessageReceiveDataType, socket?: any): void;
 }

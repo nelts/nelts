@@ -3,6 +3,7 @@ import WorkerPlugin from './worker/plugin';
 import AgentPlugin from './agent/plugin';
 import WorkerApplciation from './worker/index';
 import AgentApplciation from './agent/index';
+import _component_agent from './agent/components/base';
 import _component_controller from './worker/components/controller';
 import _component_service from './worker/components/service';
 import _decorator_prefix from './worker/decorators/router/prefix';
@@ -22,6 +23,8 @@ import _decorator_request_dynamic_filter from './worker/decorators/request/dynam
 import _decorator_request_guard from './worker/decorators/request/guard';
 import _decorator_middleware from './worker/decorators/middleware';
 import _decorator_response from './worker/decorators/response';
+import _decorator_ipc from './agent/decorators/ipc';
+import _decorator_feedback from './agent/decorators/feedback';
 import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
@@ -42,7 +45,8 @@ export type CustomExtendableType<T> = {
 
 const Component = {
   Controller: _component_controller,
-  Service: _component_service
+  Service: _component_service,
+  Agent: _component_agent
 }
 
 const Decorator = {
@@ -74,7 +78,9 @@ const Decorator = {
     Guard: _decorator_request_guard,
     Response: _decorator_response,
     Middleware: _decorator_middleware,
-  }
+  },
+  Ipc: _decorator_ipc,
+  Feedback: _decorator_feedback
 };
 
 const Extra = {
