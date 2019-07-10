@@ -62,12 +62,13 @@ export default class Messager<T> {
   asyncSend(method: string, data: any, options?: ProcessMessageSendOptions) {
     return new Promise((resolve, reject) => {
       const _id = this.send(method, data, options);
+      const timeout = typeof options === 'object' ? options.timeout : 20000;
       const timer = setTimeout(() => {
         if (this._stacks[_id]) {
           delete this._stacks[_id];
-          reject(new Error('ipc request timeout:' + _id));
+          reject(new Error('ipc request timeout: ' + _id + 'ms'));
         }
-      }, (<MessageSendOptions>options).timeout || 20000);
+      }, timeout);
       const resolver = (value?: unknown) => {
         clearTimeout(timer);
         delete this._stacks[_id];
