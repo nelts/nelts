@@ -77,6 +77,8 @@ class Master extends process_1.Component {
         }
     }
     masterMessageConvert(message, socket) {
+        if (!message.method)
+            return this.messager.parse(message.id, message.code, message.data);
         const reply = this.createReply(message, socket);
         switch (message.method) {
             case 'newAgent':
@@ -111,7 +113,7 @@ class Master extends process_1.Component {
                 id: message.id,
                 to: message.from,
                 from: process.pid,
-                data,
+                data: data.data,
                 code: data.code,
             }, socket);
         };

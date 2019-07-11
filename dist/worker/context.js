@@ -31,6 +31,9 @@ class Context extends events_1.default {
     asyncSend(method, data, options) {
         return this.messager.asyncSend(method, data, options);
     }
+    asyncHealth() {
+        return this.messager.asyncHealth();
+    }
     stash(fn) {
         this._stacks.push(fn);
         return this;

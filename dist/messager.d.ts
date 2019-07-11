@@ -23,5 +23,6 @@ export default class Messager<T extends Component> {
     createAgent(name: any, file: string, args?: any): Promise<unknown>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
     asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
+    asyncHealth(): Promise<unknown>;
 }
 export {};

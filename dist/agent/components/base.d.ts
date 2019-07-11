@@ -7,5 +7,6 @@ export default class Agent {
     readonly messager: import("../../messager").default<AgentAppplication>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
     asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
+    asyncHealth(): Promise<unknown>;
     kill(): void;
 }

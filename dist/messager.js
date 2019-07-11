@@ -68,7 +68,7 @@ class Messager {
             const timer = setTimeout(() => {
                 if (this._stacks[_id]) {
                     delete this._stacks[_id];
-                    reject(new Error('ipc request timeout: ' + _id + 'ms'));
+                    reject(new Error('ipc request timeout: ' + timeout + 'ms'));
                 }
             }, timeout);
             const resolver = (value) => {
@@ -83,6 +83,9 @@ class Messager {
             };
             this._stacks[_id] = [resolver, rejecter];
         });
+    }
+    asyncHealth() {
+        return this.asyncSend('health');
     }
 }
 exports.default = Messager;

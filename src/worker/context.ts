@@ -62,6 +62,10 @@ export default class Context extends AsyncEventEmitter {
     return this.messager.asyncSend(method, data, options);
   }
 
+  asyncHealth() {
+    return this.messager.asyncHealth();
+  }
+
   stash(fn: StackCallback) {
     this._stacks.push(fn);
     return this;

@@ -33,6 +33,7 @@ export default class Context extends AsyncEventEmitter {
     readonly messager: import("../messager").default<import(".").default>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
     asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
+    asyncHealth(): Promise<unknown>;
     stash(fn: StackCallback): this;
     commit(): Promise<void>;
     rollback(e: ContextError): Promise<void>;

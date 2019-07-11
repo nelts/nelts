@@ -19,6 +19,10 @@ export default class Agent {
     return this.messager.asyncSend(method, data, options);
   }
 
+  asyncHealth() {
+    return this.messager.asyncHealth();
+  }
+
   kill() {
     return this.app.kill(process.pid);
   }

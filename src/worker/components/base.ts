@@ -17,4 +17,8 @@ export default class Controller {
   asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions) {
     return this.messager.asyncSend(method, data, options);
   }
+
+  asyncHealth() {
+    return this.messager.asyncHealth();
+  }
 }
