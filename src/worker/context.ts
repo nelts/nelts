@@ -54,11 +54,11 @@ export default class Context extends AsyncEventEmitter {
     return this.app.app.messager;
   }
 
-  send(method: string, data: any, options?: ProcessMessageSendOptions) {
+  send(method: string, data?: any, options?: ProcessMessageSendOptions) {
     return this.messager.send(method, data, options);
   }
 
-  asyncSend(method: string, data: any, options?: ProcessMessageSendOptions) {
+  asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions) {
     return this.messager.asyncSend(method, data, options);
   }
 

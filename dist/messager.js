@@ -38,12 +38,27 @@ class Messager {
             };
         }
         const _id = id++;
-        process.send({
+        const to = options.to || this.mpid;
+        const sendData = {
             id: _id,
-            to: options.to || this.mpid,
+            to,
             from: process.pid,
             method, data,
-        }, options.socket);
+        };
+        if (process.send) {
+            process.send(sendData, options.socket);
+        }
+        else {
+            if (typeof to === 'number' && !!this.app.processer.pids[to]) {
+                this.app.processer.pids[to].send(sendData, options.socket);
+            }
+            else if (typeof to === 'string' && !!this.app.processer.agents[to]) {
+                this.app.processer.agents[to].send(sendData, options.socket);
+            }
+            else {
+                throw new Error('options.to must be a number or a string, but got ' + typeof to + ' in master process');
+            }
+        }
         return _id;
     }
     asyncSend(method, data, options) {

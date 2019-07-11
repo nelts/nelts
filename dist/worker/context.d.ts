@@ -31,8 +31,8 @@ export default class Context extends AsyncEventEmitter {
     [label: string]: any;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
     readonly messager: import("../messager").default<import(".").default>;
-    send(method: string, data: any, options?: ProcessMessageSendOptions): number;
-    asyncSend(method: string, data: any, options?: ProcessMessageSendOptions): Promise<unknown>;
+    send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
+    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
     stash(fn: StackCallback): this;
     commit(): Promise<void>;
     rollback(e: ContextError): Promise<void>;

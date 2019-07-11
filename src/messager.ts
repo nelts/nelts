@@ -1,3 +1,4 @@
+import { Component } from '@nelts/process';
 type ipcStatus = 0 | 1;
 type MessageSendOptions = { to?: string | number, socket?: any, timeout?: number };
 export type ProcessMessageSendOptions = string | number | MessageSendOptions;
@@ -12,7 +13,7 @@ export type ProcessMessageReceiveDataType = {
 
 let id = 1;
 
-export default class Messager<T> {
+export default class Messager<T extends Component> {
   private app: T;
   public mpid: number;
   private _stacks: { [name: string]: [(value?: unknown) => void, (reason?: any) => void] };
@@ -44,7 +45,7 @@ export default class Messager<T> {
     });
   }
 
-  send(method: string, data: any, options?: ProcessMessageSendOptions) {
+  send(method: string, data?: any, options?: ProcessMessageSendOptions) {
     if (!options) options = this.mpid;
     if (typeof options !== 'object') {
       options = {
@@ -52,16 +53,29 @@ export default class Messager<T> {
       }
     }
     const _id = id++;
-    process.send({
+    const to = options.to || this.mpid;
+    const sendData = {
       id: _id,
-      to: options.to || this.mpid,
+      to,
       from: process.pid,
       method, data,
-    }, options.socket);
+    };
+    if (process.send) {
+      process.send(sendData, options.socket);
+    } else {
+      // 兼容master情况
+      if (typeof to === 'number' && !!this.app.processer.pids[to]) {
+        this.app.processer.pids[to].send(sendData, options.socket)
+      } else if (typeof to === 'string' && !!this.app.processer.agents[to]) {
+        this.app.processer.agents[to].send(sendData, options.socket);
+      } else {
+        throw new Error('options.to must be a number or a string, but got ' + typeof to + ' in master process');
+      }
+    }
     return _id;
   }
 
-  asyncSend(method: string, data: any, options?: ProcessMessageSendOptions) {
+  asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions) {
     return new Promise((resolve, reject) => {
       const _id = this.send(method, data, options);
       const timeout = typeof options === 'object' ? options.timeout : 20000;
