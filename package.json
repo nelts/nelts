@@ -7,6 +7,10 @@
     "dev": "NODE_ENV=development ts-node node_modules/@nelts/process/dist/runtime.js --script=src/index --base=test --max=1 --config=configs.json",
     "build": "rm -rf dist/ && tsc -d"
   },
+  "files":[
+    "dist",
+    "src"
+  ],
   "author": "cevio",
   "license": "MIT",
   "dependencies": {
