@@ -45,7 +45,32 @@ class AgentComponent extends factory_1.default {
         const name = message.to;
         const pid = process.pid;
         if (name === this._name || name === pid) {
-            if (message.method && this._target[message.method]) {
+            if (message.method === 'health') {
+                const healthTime = new Date();
+                if (!this._target.health) {
+                    process.send({
+                        id: message.id,
+                        to: message.from,
+                        from: process.pid,
+                        data: {
+                            time: healthTime,
+                            status: true,
+                        },
+                        code: 0
+                    });
+                }
+                else {
+                    let result;
+                    try {
+                        result = this._target.health(message.data, socket);
+                    }
+                    catch (e) {
+                        result = e;
+                    }
+                    this._sendValue(result, message, value => Object.assign(value || {}, { time: healthTime }));
+                }
+            }
+            else if (message.method && this._target[message.method]) {
                 this.runWidthMethod(message, socket);
             }
             else if (message.id && [0, 1].includes(message.code)) {
@@ -67,44 +92,45 @@ class AgentComponent extends factory_1.default {
             catch (e) {
                 result = e;
             }
-            if (Object.prototype.toString.call(result) === '[object Promise]') {
-                if (isFallback) {
-                    result.then(value => process.send({
-                        id: message.id,
-                        to: message.from,
-                        from: process.pid,
-                        data: value,
-                        code: 0
-                    })).catch(e => process.send({
-                        id: message.id,
-                        to: message.from,
-                        from: process.pid,
-                        data: e,
-                        code: 1
-                    }));
-                }
+            if (isFallback) {
+                this._sendValue(result, message);
+            }
+        }
+    }
+    _sendValue(result, message, callback) {
+        if (Object.prototype.toString.call(result) === '[object Promise]') {
+            result.then(value => process.send({
+                id: message.id,
+                to: message.from,
+                from: process.pid,
+                data: callback ? callback(value) : value,
+                code: 0
+            })).catch(e => process.send({
+                id: message.id,
+                to: message.from,
+                from: process.pid,
+                data: e.message,
+                code: 1
+            }));
+        }
+        else {
+            if (result instanceof Error) {
+                process.send({
+                    id: message.id,
+                    to: message.from,
+                    from: process.pid,
+                    data: result.message,
+                    code: 1
+                });
             }
             else {
-                if (isFallback) {
-                    if (result instanceof Error) {
-                        process.send({
-                            id: message.id,
-                            to: message.from,
-                            from: process.pid,
-                            data: result,
-                            code: 1
-                        });
-                    }
-                    else {
-                        process.send({
-                            id: message.id,
-                            to: message.from,
-                            from: process.pid,
-                            data: result,
-                            code: 0
-                        });
-                    }
-                }
+                process.send({
+                    id: message.id,
+                    to: message.from,
+                    from: process.pid,
+                    data: callback ? callback(result) : result,
+                    code: 0
+                });
             }
         }
     }

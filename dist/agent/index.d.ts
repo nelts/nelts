@@ -20,4 +20,5 @@ export default class AgentComponent extends Factory<AgentPlugin> {
     componentCatchError(err: Error): void;
     componentReceiveMessage(message: ProcessMessageReceiveDataType, socket?: any): void;
     private runWidthMethod;
+    private _sendValue;
 }

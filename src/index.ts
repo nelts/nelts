@@ -32,6 +32,14 @@ export default class Master extends Component {
     this._messager = new Messager<Master>(this, args.mpid);
   }
 
+  private async health() {
+    const agents = Object.keys(this.processer.agents);
+    const datas = await Promise.all(agents.map(agent => this._messager.asyncSend('health', null, agent)));
+    const result: { [name: string]: any } = {};
+    datas.forEach((data, index) => result[agents[index]] = data);
+    return result;
+  }
+
   async componentWillCreate() {
     this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
   }
@@ -42,12 +50,13 @@ export default class Master extends Component {
       const worker = await this._forker();
       console.info(`worker [pid:${worker.pid}] forked.\n\n`);
     }
-    this.processer.workers[0].send({
+    const firstWorker = this.processer.workers[0];
+    firstWorker.send({
       id: -1,
-      to: this.processer.workers[0].pid,
+      to: firstWorker.pid,
       from: process.pid,
       method: '__master:done__',
-    });
+    });    
   }
 
   componentCatchError(err: Error) {
@@ -92,6 +101,9 @@ export default class Master extends Component {
           .then(() => reply({ code: 0, time: Date.now() - startCreateAgentTime }))
           .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
         }
+        break;
+      case 'health':
+        this.health().then(data => reply({ code: 0, data })).catch(e => reply({ code: 1, message: e.message }));
         break;
       default: throw new Error('cannot find the master.message.convert:' + message.method);
     }

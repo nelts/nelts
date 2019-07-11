@@ -8,10 +8,12 @@ class Messager {
         this.mpid = mpid;
     }
     parse(id, code, data) {
-        if (!this._stacks[id])
-            throw new Error('cannot find the callbackId of ' + id);
-        const callback = this._stacks[id][code];
-        callback(data);
+        if (this._stacks[id]) {
+            const callback = this._stacks[id][code];
+            if (code === 1 && typeof data === 'string' && !!data)
+                data = new Error(data);
+            callback(data);
+        }
     }
     createAgent(name, file, args) {
         if (!file && typeof name !== 'string') {

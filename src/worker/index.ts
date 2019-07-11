@@ -107,7 +107,10 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
         this.messager.parse(message.id, message.code, message.data);
       } else {
         switch (message.method) {
-          case '__master:done__': this._app.broadcast('ready'); break;
+          case '__master:done__': 
+            if (message.id !== -1) throw new Error('id is invaild on master:ready lifecycle');
+            this._app.broadcast('ready'); 
+            break;
           default: throw new Error('No support actions on ipc receiver');
         }
       }

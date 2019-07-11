@@ -12,6 +12,7 @@ export default class Master extends Component {
     constructor(processer: Processer, args: {
         [name: string]: any;
     });
+    private health;
     componentWillCreate(): Promise<void>;
     componentDidCreated(): Promise<void>;
     componentCatchError(err: Error): void;
