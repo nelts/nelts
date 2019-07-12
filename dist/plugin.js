@@ -23,6 +23,9 @@ class Plugin extends events_1.default {
             return cwd;
         return path.resolve(cwd, packageExports.source);
     }
+    get logger() {
+        return this.app.logger;
+    }
     get configs() {
         return this._configs;
     }

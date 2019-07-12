@@ -86,6 +86,10 @@ export default class Context extends AsyncEventEmitter {
     this._stackStatus = 1;
   }
 
+  get logger() {
+    return this.app.app.logger;
+  }
+
   get query() {
     return this.request.query;
   }
@@ -113,9 +117,9 @@ export default class Context extends AsyncEventEmitter {
     if (this.silent) return;
 
     const msg = err.stack || err.toString();
-    console.error();
-    console.error(msg.replace(/^/gm, '  '));
-    console.error();
+    this.logger.error('');
+    this.logger.error(msg.replace(/^/gm, '  '));
+    this.logger.error('');
   }
 
   get body() {

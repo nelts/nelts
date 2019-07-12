@@ -33,6 +33,10 @@ export default class Plugin<M extends Factory<Plugin<M>>> extends EventEmitter {
     return path.resolve(cwd, packageExports.source);
   }
 
+  get logger() {
+    return this.app.logger;
+  }
+
   get configs() {
     return this._configs;
   }

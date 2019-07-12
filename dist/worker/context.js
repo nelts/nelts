@@ -54,6 +54,9 @@ class Context extends events_1.default {
         await this.app.root.broadcast('ContextReject', e, this);
         this._stackStatus = 1;
     }
+    get logger() {
+        return this.app.app.logger;
+    }
     get query() {
         return this.request.query;
     }
@@ -77,9 +80,9 @@ class Context extends events_1.default {
         if (this.silent)
             return;
         const msg = err.stack || err.toString();
-        console.error();
-        console.error(msg.replace(/^/gm, '  '));
-        console.error();
+        this.logger.error('');
+        this.logger.error(msg.replace(/^/gm, '  '));
+        this.logger.error('');
     }
     get body() {
         return this.response.body;

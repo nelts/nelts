@@ -21,6 +21,10 @@ export default class Factory<T> extends Component {
     }
   }
 
+  get logger() {
+    return this.processer.logger;
+  }
+
   get base() {
     return this._base;
   }

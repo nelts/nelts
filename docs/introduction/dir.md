@@ -8,11 +8,16 @@
 
 - `src/` 插件源文件目录
 - `nelts.config.js` 插件参数配置文件
+- `logger.js` 日志配置文件
 - `.gitignore`
 - `package-lock.json`
 - `package.json` 插件描述文件
 - `README.md` 描述文档
 - `tsconfig.json` TS 配置文件
+
+
+`logger.js`为日志配置文件。我们采用 [log4js](https://www.npmjs.com/package/log4js) 作为我们的日志处理模块。此文件就是用来配置 `log4js`。用法请看[这里](https://github.com/log4js-node/log4js-node#documentation)。
+
 
 `package.json`文件比较特殊，我们额外增加了以下的属性字段：
 

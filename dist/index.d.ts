@@ -9,6 +9,7 @@ export default class Master extends Component {
     private _messager;
     private _forker;
     readonly messager: Messager<Master>;
+    readonly logger: import("log4js").Logger;
     constructor(processer: Processer, args: {
         [name: string]: any;
     });

@@ -13,8 +13,8 @@ const service_1 = require("./compilers/service");
 const agent_1 = require("./compilers/agent");
 class WorkerComponent extends factory_1.default {
     constructor(processer, args) {
-        console.info(`[pid:${process.pid}] server opening...`);
         super(processer, args);
+        this.logger.info(`[pid:${process.pid}] server opening...`);
         this._port = Number(args.port || 8080);
         this._middlewares = [];
         this.messager = new messager_1.default(this, args.mpid);
@@ -67,7 +67,7 @@ class WorkerComponent extends factory_1.default {
             });
         });
         await this._app.broadcast('ServerStarted');
-        console.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
+        this.logger.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
     }
     async componentWillDestroy() {
         await this._app.broadcast('ServerStopping');
@@ -76,10 +76,10 @@ class WorkerComponent extends factory_1.default {
         this.server.close();
         await new Promise(resolve => process.nextTick(resolve));
         await this._app.broadcast('ServerStopped');
-        console.info(`[pid:${process.pid}] server closed`);
+        this.logger.info(`[pid:${process.pid}] server closed`);
     }
     componentCatchError(err) {
-        console.error(err);
+        this.logger.error(err);
     }
     componentReceiveMessage(message, socket) {
         const name = message.to;

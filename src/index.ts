@@ -20,6 +20,10 @@ export default class Master extends Component {
     return this._messager;
   }
 
+  get logger() {
+    return this.processer.logger;
+  }
+
   constructor(processer: Processer, args: { [name:string]: any }) {
     super(processer, args);
     const base = args.base ? path.resolve(args.base || '.') : args.cwd;
@@ -46,9 +50,9 @@ export default class Master extends Component {
 
   async componentDidCreated() {
     for (let i = 0; i < this._max; i++) {
-      console.info('forking worker...');
+      this.logger.info('forking worker...');
       const worker = await this._forker();
-      console.info(`worker [pid:${worker.pid}] forked.\n\n`);
+      this.logger.info(`worker [pid:${worker.pid}] forked.\n\n`);
     }
     const firstWorker = this.processer.workers[0];
     firstWorker.send({
@@ -60,7 +64,7 @@ export default class Master extends Component {
   }
 
   componentCatchError(err: Error) {
-    console.error(err);
+    this.logger.error(err);
   }
 
   componentReceiveMessage(message: ProcessMessageReceiveDataType, socket?:any) {
@@ -118,7 +122,7 @@ export default class Master extends Component {
         id: message.id,
         to: message.from,
         from: process.pid,
-        data: data.data,
+        data: data.data || data.message,
         code: data.code,
       }, socket);
     }

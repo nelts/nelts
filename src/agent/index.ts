@@ -51,7 +51,7 @@ export default class AgentComponent extends Factory<AgentPlugin> {
   }
 
   componentCatchError(err: Error) {
-    console.error(err);
+    this.logger.error(err);
     this._target.catchError && this._target.catchError(err);
   }
 

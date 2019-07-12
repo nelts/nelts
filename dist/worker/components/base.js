@@ -4,6 +4,9 @@ class Controller {
     constructor(plugin) {
         this.app = plugin;
     }
+    get logger() {
+        return this.app.logger;
+    }
     get messager() {
         return this.app.app.messager;
     }

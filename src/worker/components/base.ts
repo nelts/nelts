@@ -6,6 +6,10 @@ export default class Controller {
     this.app = plugin;
   }
 
+  get logger() {
+    return this.app.logger;
+  }
+
   get messager() {
     return this.app.app.messager;
   }

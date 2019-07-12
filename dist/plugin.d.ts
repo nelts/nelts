@@ -13,6 +13,7 @@ export default class Plugin<M extends Factory<Plugin<M>>> extends EventEmitter {
     root: Plugin<M>;
     constructor(app: M, name: string, cwd: string);
     private _findSource;
+    readonly logger: import("log4js").Logger;
     readonly configs: NELTS_CONFIGS;
     readonly app: M;
     readonly name: string;

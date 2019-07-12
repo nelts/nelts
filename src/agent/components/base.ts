@@ -7,6 +7,10 @@ export default class Agent {
     this.app = app;
   }
 
+  get logger() {
+    return this.app.logger;
+  }
+
   get messager() {
     return this.app.messager;
   }

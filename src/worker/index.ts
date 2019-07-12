@@ -26,8 +26,8 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   public messager: Messager<WorkerComponent>;
 
   constructor(processer: Processer, args: { [name:string]: any }) {
-    console.info(`[pid:${process.pid}] server opening...`);
     super(processer, args);
+    this.logger.info(`[pid:${process.pid}] server opening...`);
     this._port = Number(args.port || 8080);
     this._middlewares = [];
     this.messager = new Messager<WorkerComponent>(this, args.mpid);
@@ -81,7 +81,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
       });
     });
     await this._app.broadcast('ServerStarted');
-    console.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
+    this.logger.info(`[pid:${process.pid}] server opened at http://127.0.0.1:${this._port}`);
   }
 
   async componentWillDestroy() {
@@ -92,11 +92,11 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     this.server.close();
     await new Promise(resolve => process.nextTick(resolve));
     await this._app.broadcast('ServerStopped');
-    console.info(`[pid:${process.pid}] server closed`);
+    this.logger.info(`[pid:${process.pid}] server closed`);
   }
 
   componentCatchError(err: Error) {
-    console.error(err);
+    this.logger.error(err);
   }
 
   componentReceiveMessage(message:ProcessMessageReceiveDataType, socket?:any) {

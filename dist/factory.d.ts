@@ -10,6 +10,7 @@ export default class Factory<T> extends Component {
     constructor(processer: Processer, args: {
         [name: string]: any;
     });
+    readonly logger: import("log4js").Logger;
     readonly base: string;
     readonly env: string;
     readonly plugins: {

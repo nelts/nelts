@@ -16,6 +16,9 @@ class Factory extends process_1.Component {
             this._configs = require_1.default(args.config, this._base);
         }
     }
+    get logger() {
+        return this.processer.logger;
+    }
     get base() {
         return this._base;
     }

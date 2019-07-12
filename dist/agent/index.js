@@ -38,7 +38,7 @@ class AgentComponent extends factory_1.default {
         await this._app.emit('AgentStopped');
     }
     componentCatchError(err) {
-        console.error(err);
+        this.logger.error(err);
         this._target.catchError && this._target.catchError(err);
     }
     componentReceiveMessage(message, socket) {

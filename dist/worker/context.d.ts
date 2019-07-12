@@ -37,6 +37,7 @@ export default class Context extends AsyncEventEmitter {
     stash(fn: StackCallback): this;
     commit(): Promise<void>;
     rollback(e: ContextError): Promise<void>;
+    readonly logger: import("log4js").Logger;
     readonly query: import("./request").RequestQuerySchema;
     readonly header: import("http").IncomingHttpHeaders;
     readonly headers: import("http").IncomingHttpHeaders;
