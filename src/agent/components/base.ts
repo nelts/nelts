@@ -30,4 +30,8 @@ export default class Agent {
   kill() {
     return this.app.kill(process.pid);
   }
+
+  notice(type: string, data: any) {
+    this.send('notice', { type, data });
+  }
 }

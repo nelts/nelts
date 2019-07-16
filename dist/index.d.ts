@@ -14,6 +14,7 @@ export default class Master extends Component {
         [name: string]: any;
     });
     private health;
+    private notice;
     componentWillCreate(): Promise<void>;
     componentDidCreated(): Promise<void>;
     componentCatchError(err: Error): void;

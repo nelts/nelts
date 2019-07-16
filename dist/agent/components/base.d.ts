@@ -10,4 +10,5 @@ export default class Agent {
     asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
     asyncHealth(): Promise<unknown>;
     kill(): void;
+    notice(type: string, data: any): void;
 }

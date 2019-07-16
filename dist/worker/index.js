@@ -93,7 +93,10 @@ class WorkerComponent extends factory_1.default {
                     case '__master:done__':
                         if (message.id !== -1)
                             throw new Error('id is invaild on master:ready lifecycle');
-                        this._app.broadcast('ready');
+                        this._app.broadcast('ready').catch(e => this.logger.error(e));
+                        break;
+                    case '__master:notice__':
+                        this._app.broadcast('notice', message.data).catch(e => this.logger.error(e));
                         break;
                     default: throw new Error('No support actions on ipc receiver');
                 }

@@ -22,5 +22,8 @@ class Agent {
     kill() {
         return this.app.kill(process.pid);
     }
+    notice(type, data) {
+        this.send('notice', { type, data });
+    }
 }
 exports.default = Agent;

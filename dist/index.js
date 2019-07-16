@@ -37,6 +37,15 @@ class Master extends process_1.Component {
         datas.forEach((data, index) => result[agents[index]] = data);
         return result;
     }
+    notice(data) {
+        const workers = this.processer.workers;
+        workers.forEach(worker => {
+            const pid = worker.pid;
+            this.messager.send('__master:notice__', data, {
+                to: pid
+            });
+        });
+    }
     async componentWillCreate() {
         this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
     }
@@ -103,6 +112,9 @@ class Master extends process_1.Component {
                 break;
             case 'health':
                 this.health().then(data => reply({ code: 0, data })).catch(e => reply({ code: 1, message: e.message }));
+                break;
+            case 'notice':
+                this.notice(message.data);
                 break;
             default: throw new Error('cannot find the master.message.convert:' + message.method);
         }
