@@ -112,6 +112,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
             this._app.broadcast('ready').catch(e => this.logger.error(e)); 
             break;
           case '__master:notice__':
+            this.logger.info('worker', process.pid, 'receive __master:notice__ from master and broadcast to plugins');
             this._app.broadcast('notice', message.data).catch(e => this.logger.error(e));
             break;
           default: throw new Error('No support actions on ipc receiver');

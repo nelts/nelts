@@ -48,6 +48,7 @@ export default class Master extends Component {
     const workers = this.processer.workers;
     workers.forEach(worker => {
       const pid = worker.pid;
+      this.logger.info('send', '__master:notice__', 'commander to worker');
       this.messager.send('__master:notice__', data, {
         to: pid
       });
@@ -121,6 +122,7 @@ export default class Master extends Component {
         this.health().then(data => reply({ code: 0, data })).catch(e => reply({ code: 1, message: e.message }));
         break;
       case 'notice':
+        this.logger.info('master receive notice message', message.data);
         this.notice(message.data);
         break;
       default: throw new Error('cannot find the master.message.convert:' + message.method);
