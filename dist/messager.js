@@ -45,7 +45,7 @@ class Messager {
             from: process.pid,
             method, data,
         };
-        if (process.send) {
+        if (this.mpid !== process.pid) {
             process.send(sendData, options.socket);
         }
         else {

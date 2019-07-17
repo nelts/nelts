@@ -60,7 +60,7 @@ export default class Messager<T extends Component> {
       from: process.pid,
       method, data,
     };
-    if (process.send) {
+    if (this.mpid !== process.pid) {
       process.send(sendData, options.socket);
     } else {
       // 兼容master情况
