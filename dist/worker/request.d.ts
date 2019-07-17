@@ -27,7 +27,7 @@ export default class Request {
     readonly length: number;
     readonly secure: boolean;
     readonly ips: string[];
-    readonly ip: string | string[];
+    readonly ip: string;
     readonly header: import("http").IncomingHttpHeaders;
     readonly headers: import("http").IncomingHttpHeaders;
     readonly url: string;

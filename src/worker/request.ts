@@ -92,7 +92,7 @@ export default class Request {
   }
 
   get ip() {
-    return this.ips || this.req.socket.remoteAddress || '';
+    return this.ips[0] || this.req.socket.remoteAddress || '';
   }
 
   get header() {
