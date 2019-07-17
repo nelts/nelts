@@ -49,10 +49,10 @@ class Messager {
             process.send(sendData, options.socket);
         }
         else {
-            if (typeof to === 'number' && !!this.app.processer.pids[to]) {
+            if (typeof to === 'number' && this.app.processer.pids[to]) {
                 this.app.processer.pids[to].send(sendData, options.socket);
             }
-            else if (typeof to === 'string' && !!this.app.processer.agents[to]) {
+            else if (typeof to === 'string' && this.app.processer.agents[to]) {
                 this.app.processer.agents[to].send(sendData, options.socket);
             }
             else {
