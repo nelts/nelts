@@ -30,6 +30,8 @@ export default class Context extends AsyncEventEmitter {
     respond: boolean;
     [label: string]: any;
     constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
+    throw(message: Error | string, code?: number): void;
+    error(message: Error | string, code?: number): ContextError;
     readonly messager: import("../messager").default<import(".").default>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
     asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;

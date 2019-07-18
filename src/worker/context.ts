@@ -50,6 +50,16 @@ export default class Context extends AsyncEventEmitter {
     });
   }
 
+  throw(message: Error | string, code?: number) {
+    throw this.error(message, code);
+  }
+
+  error(message: Error | string, code?: number) {
+    const error: ContextError = typeof message === 'string' ? new Error(message) : message;
+    error.status = code || 500;
+    return error;
+  }
+
   get messager() {
     return this.app.app.messager;
   }

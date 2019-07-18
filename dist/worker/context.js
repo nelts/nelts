@@ -22,6 +22,14 @@ class Context extends events_1.default {
             secure: this.request.secure,
         });
     }
+    throw(message, code) {
+        throw this.error(message, code);
+    }
+    error(message, code) {
+        const error = typeof message === 'string' ? new Error(message) : message;
+        error.status = code || 500;
+        return error;
+    }
     get messager() {
         return this.app.app.messager;
     }
