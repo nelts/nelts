@@ -47,6 +47,10 @@ const require_1 = require("./helper/require");
 exports.Require = require_1.default;
 const request_response_compose_1 = require("./helper/request-response-compose");
 exports.UsedCompose = request_response_compose_1.default;
+const ajv_checker_1 = require("./helper/ajv-checker");
+exports.AjvChecker = ajv_checker_1.default;
+const ajv_string_formater_1 = require("./helper/ajv-string-formater");
+exports.AjvFormatter = ajv_string_formater_1.default;
 const Component = {
     Controller: controller_1.default,
     Service: service_1.default,

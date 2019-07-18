@@ -34,6 +34,8 @@ import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
 import Require from './helper/require';
 import UsedCompose, { NextCallback, Middleware, ComposedMiddleware } from './helper/request-response-compose';
+import AjvChecker from './helper/ajv-checker';
+import AjvFormatter from './helper/ajv-string-formater';
 
 export interface NELTS_CONFIGS {
   cookie?: string[],
@@ -99,9 +101,11 @@ export {
   Context,
   Component,
   Decorator,
+  AjvChecker,
   Middleware,
   AgentPlugin,
   UsedCompose,
+  AjvFormatter,
   WorkerPlugin,
   ContextError,
   NextCallback,
