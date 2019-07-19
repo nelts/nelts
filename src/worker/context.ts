@@ -17,15 +17,15 @@ export interface ContextError extends Error {
   expose?: boolean
 }
 
-export default class Context extends AsyncEventEmitter {
+export default class Context<T extends Plugin> extends AsyncEventEmitter {
 
-  readonly app: Plugin;
+  readonly app: T;
   readonly req: IncomingMessage;
   readonly res: ServerResponse;
   readonly params: ParamSchema;
   readonly cookies: Cookies;
-  readonly request: Request;
-  readonly response: Response;
+  readonly request: Request<T, Context<T>>;
+  readonly response: Response<T, Context<T>>;
   private _stacks: StackCallback[];
   private _stackStatus: StackStatus;
   public silent: boolean;
@@ -33,7 +33,7 @@ export default class Context extends AsyncEventEmitter {
   public respond: boolean;
   [label: string]: any;
 
-  constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema) {
+  constructor(app: T, req: IncomingMessage, res: ServerResponse, params?: ParamSchema) {
     super();
     this._stacks = [];
     this._stackStatus = 0;
@@ -132,6 +132,22 @@ export default class Context extends AsyncEventEmitter {
     this.logger.error('');
   }
 
+  get accept() {
+    return this.request.accept;
+  }
+
+  get url() {
+    return this.request.url;
+  }
+
+  set ip(value: string) {
+    this.request.ip = value;
+  }
+
+  get ip() {
+    return this.request.ip;
+  }
+
   get body() {
     return this.response.body;
   }
@@ -176,6 +192,26 @@ export default class Context extends AsyncEventEmitter {
     this.response.type = value;
   }
 
+  set lastModified(val: string | Date | number) {
+    this.response.lastModified = val;
+  }
+
+  get lastModified() {
+    return this.response.lastModified;
+  }
+
+  set etag(val: string) {
+    this.response.etag = val;
+  }
+
+  get etag() {
+    return this.response.etag;
+  }
+
+  get headerSent() {
+    return this.response.headerSent;
+  }
+
   redirect(url: string, alt?: string) {
     this.response.redirect(url, alt);
   }
@@ -194,6 +230,10 @@ export default class Context extends AsyncEventEmitter {
 
   flushHeaders() {
     return this.response.flushHeaders();
+  }
+
+  remove(value: string) {
+    return this.response.remove(value);
   }
 }
 

@@ -3,13 +3,17 @@ import Context from './context';
 import * as url from 'url';
 import * as typeis from 'type-is';
 import * as accepts from 'accepts';
+import Plugin from './plugin';
+
+const IP = Symbol('Context:IP');
 
 export interface RequestQuerySchema {
   [name:string]: string | string[];
 }
 
-export default class Request {
-  readonly ctx: Context;
+export default class Request<M extends Plugin, T extends Context<M> > {
+  private _ip: string;
+  readonly ctx: T;
   readonly req: IncomingMessage;
   readonly search: string;
   readonly query: RequestQuerySchema;
@@ -24,7 +28,7 @@ export default class Request {
 
   private _accept: accepts.Accepts;
 
-  constructor(ctx: Context, req: IncomingMessage) {
+  constructor(ctx: T, req: IncomingMessage) {
     const parsed = url.parse(req.url, true);
     this.ctx = ctx;
     this.req = req;
@@ -92,7 +96,14 @@ export default class Request {
   }
 
   get ip() {
-    return this.ips[0] || this.req.socket.remoteAddress || '';
+    if (!this._ip) {
+      this._ip = this.ips[0] || this.req.socket.remoteAddress || '';
+    }
+    return this._ip;
+  }
+
+  set ip(value: string) {
+    this._ip = value;
   }
 
   get header() {

@@ -1,4 +1,5 @@
 import 'reflect-metadata';
 import * as Compose from 'koa-compose';
 import Context from '../../context';
-export default function Guarder(...args: Compose.Middleware<Context>[]): MethodDecorator;
+import Plugin from '../../plugin';
+export default function Guarder<T extends Plugin>(...args: Compose.Middleware<Context<T>>[]): MethodDecorator;

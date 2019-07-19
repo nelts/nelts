@@ -92,6 +92,18 @@ class Context extends events_1.default {
         this.logger.error(msg.replace(/^/gm, '  '));
         this.logger.error('');
     }
+    get accept() {
+        return this.request.accept;
+    }
+    get url() {
+        return this.request.url;
+    }
+    set ip(value) {
+        this.request.ip = value;
+    }
+    get ip() {
+        return this.request.ip;
+    }
     get body() {
         return this.response.body;
     }
@@ -125,6 +137,21 @@ class Context extends events_1.default {
     set type(value) {
         this.response.type = value;
     }
+    set lastModified(val) {
+        this.response.lastModified = val;
+    }
+    get lastModified() {
+        return this.response.lastModified;
+    }
+    set etag(val) {
+        this.response.etag = val;
+    }
+    get etag() {
+        return this.response.etag;
+    }
+    get headerSent() {
+        return this.response.headerSent;
+    }
     redirect(url, alt) {
         this.response.redirect(url, alt);
     }
@@ -139,6 +166,9 @@ class Context extends events_1.default {
     }
     flushHeaders() {
         return this.response.flushHeaders();
+    }
+    remove(value) {
+        return this.response.remove(value);
     }
 }
 exports.default = Context;

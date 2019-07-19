@@ -12,30 +12,30 @@ import isJSON from '../../helper/is-json';
 import * as Stream from 'stream';
 import Require from '../../helper/require';
 
-interface CONTROLLER_DECS {
+interface CONTROLLER_DECS<T extends WorkerPlugin> {
   REQUEST_STATIC_VALIDATOR_HEADER: object,
   REQUEST_STATIC_VALIDATOR_QUERY: object,
-  REQUEST_STATIC_FILTER: Compose.Middleware<Context>[],
-  REQUEST_DYNAMIC_LOADER: Compose.Middleware<Context>[],
+  REQUEST_STATIC_FILTER: Compose.Middleware<Context<T>>[],
+  REQUEST_DYNAMIC_LOADER: Compose.Middleware<Context<T>>[],
   REQUEST_DYNAMIC_VALIDATOR_BODY: object,
   REQUEST_DYNAMIC_VALIDATOR_FILE: object,
-  REQUEST_DYNAMIC_FILTER: Compose.Middleware<Context>[],
-  REQUEST_GUARD: Compose.Middleware<Context>[],
-  MIDDLEWARE: Compose.Middleware<Context>[],
-  RESPONSE: Compose.Middleware<Context>[],
+  REQUEST_DYNAMIC_FILTER: Compose.Middleware<Context<T>>[],
+  REQUEST_GUARD: Compose.Middleware<Context<T>>[],
+  MIDDLEWARE: Compose.Middleware<Context<T>>[],
+  RESPONSE: Compose.Middleware<Context<T>>[],
 }
 
-export default async function Controller(plugin: WorkerPlugin) {
+export default async function Controller<T extends WorkerPlugin>(plugin: T) {
   const cwd = plugin.source;
   const files = await globby([
     'controller/**/*.ts', 
     'controller/**/*.js', 
     '!controller/**/*.d.ts', 
   ], { cwd });
-  files.forEach((file: string) => render(plugin, path.resolve(cwd, file)));
+  files.forEach((file: string) => render<T>(plugin, path.resolve(cwd, file)));
 }
 
-function render(plugin: WorkerPlugin, file: string) {
+function render<T extends WorkerPlugin>(plugin: T, file: string) {
   let fileExports: any = Require(file);
   if (fileExports.scoped) fileExports = fileExports(plugin);
   const controllerPrefix = Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_PREFIX, fileExports) || '/';
@@ -53,7 +53,7 @@ function render(plugin: WorkerPlugin, file: string) {
       ? controllerPrefix.substring(0, controllerPrefix.length - 1)
       : controllerPrefix;
 
-    const DECS: CONTROLLER_DECS = {
+    const DECS: CONTROLLER_DECS<T> = {
       REQUEST_STATIC_VALIDATOR_HEADER: Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_STATIC_VALIDATOR_HEADER, target),
       REQUEST_STATIC_VALIDATOR_QUERY: Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_STATIC_VALIDATOR_QUERY, target),
       REQUEST_STATIC_FILTER: Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_STATIC_FILTER, target),
@@ -67,8 +67,8 @@ function render(plugin: WorkerPlugin, file: string) {
     }
 
     app.router.on(methods, CurrentRouterPrefix + CurrentRouterPath, (req, res, params) => {
-      const ctx = new Context(plugin, req, res, params);
-      const fns = addComposeCallback(DECS, fileExports, property, plugin);
+      const ctx = new Context<T>(plugin, req, res, params);
+      const fns = addComposeCallback<T>(DECS, fileExports, property, plugin);
       ctx.app.root.broadcast('ContextStart', ctx)
         .then(() => Compose(fns)(ctx))
         .catch(async (e: ContextError) => {
@@ -86,18 +86,18 @@ function render(plugin: WorkerPlugin, file: string) {
           ctx.status = (e && e.status) || 500;
           ctx.body = e.message;
         })
-        .then(() => respond(ctx));
+        .then(() => respond<T>(ctx));
     });
   }
 }
 
-function addComposeCallback(
-  options: CONTROLLER_DECS, 
+function addComposeCallback<T extends WorkerPlugin>(
+  options: CONTROLLER_DECS<T>, 
   controller: any, 
   property: PropertyKey, 
   plugin: WorkerPlugin
 ) {
-  const callbacks: Compose.Middleware<Context>[] = [];
+  const callbacks: Compose.Middleware<Context<T>>[] = [];
   // 校验 headers 和 querys 的参数是否合法
   callbacks.push(async (ctx, next) => {
     const staticValidators = [];
@@ -119,7 +119,7 @@ function addComposeCallback(
   // 如何获取动态参数中间件
   if (options.REQUEST_DYNAMIC_LOADER) {
     callbacks.push(...options.REQUEST_DYNAMIC_LOADER);
-    callbacks.push(async (ctx: Context, next: Function) => {
+    callbacks.push(async (ctx: Context<T>, next: Function) => {
       if (!ctx.request.body && !ctx.request.files) throw new Error('miss body or files, please check `@Dynamic.Loader` is working all right?');
       await next();
     });
@@ -159,7 +159,7 @@ function addComposeCallback(
   addContextLife('ContextMiddleware');
 
   // 逻辑处理
-  callbacks.push(async (ctx: Context, next: Function) => {
+  callbacks.push(async (ctx: Context<T>, next: Function) => {
     const object = new controller(plugin);
     await object[property](ctx);
     await next();
@@ -177,14 +177,14 @@ function addComposeCallback(
   return callbacks;
 
   function addContextLife(name: string) {
-    callbacks.push(async (ctx:Context, next: Function) => {
+    callbacks.push(async (ctx: Context<T>, next: Function) => {
       await ctx.app.root.broadcast(name, ctx);
       await next();
     })
   }
 }
 
-function respond(ctx: Context) {
+function respond<T extends WorkerPlugin>(ctx: Context<T>) {
   // allow bypassing koa
   if (false === ctx.respond) return;
 

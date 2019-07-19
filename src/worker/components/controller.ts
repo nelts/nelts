@@ -1,8 +1,8 @@
 import WorkerPlugin from '../plugin';
 import Component from './base';
 
-export default class Controller extends Component {
-  constructor(plugin: WorkerPlugin) {
+export default class Controller<T extends WorkerPlugin> extends Component<T> {
+  constructor(plugin: T) {
     super(plugin);
   }
 

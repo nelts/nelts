@@ -1,8 +1,8 @@
 import WorkerPlugin from '../plugin';
 import { ProcessMessageSendOptions } from '../../messager';
-export default class Controller {
-  readonly app: WorkerPlugin;
-  constructor(plugin: WorkerPlugin) {
+export default class Base<T extends WorkerPlugin> {
+  readonly app: T;
+  constructor(plugin: T) {
     this.app = plugin;
   }
 

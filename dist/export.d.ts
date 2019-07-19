@@ -27,6 +27,7 @@ import LRU from './helper/lru';
 import AsyncEventEmitter, { AsyncEventEmitterListener } from './helper/events';
 import Scope from './scope';
 import Context, { ContextError } from './worker/context';
+import JSON_SCHEMA from './worker/extra/json-schema';
 import * as Body from '@nelts/nelts-body';
 import Require from './helper/require';
 import UsedCompose, { NextCallback, Middleware, ComposedMiddleware } from './helper/request-response-compose';
@@ -79,7 +80,7 @@ declare const Decorator: {
     Auto: ClassDecorator;
 };
 declare const Extra: {
-    JSON_SCHEMA: (schema: import("fast-json-stringify").Schema) => (ctx: Context, next: Function) => Promise<any>;
+    JSON_SCHEMA: typeof JSON_SCHEMA;
     Body: typeof Body;
 };
 export { LRU, Scope, Extra, Require, Plugin, Context, Component, Decorator, AjvChecker, Middleware, AgentPlugin, UsedCompose, AjvFormatter, WorkerPlugin, ContextError, NextCallback, AgentApplciation, WorkerApplciation, AsyncEventEmitter, ComposedMiddleware, AsyncEventEmitterListener, };

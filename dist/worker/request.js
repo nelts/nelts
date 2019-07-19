@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const url = require("url");
 const typeis = require("type-is");
 const accepts = require("accepts");
+const IP = Symbol('Context:IP');
 class Request {
     constructor(ctx, req) {
         const parsed = url.parse(req.url, true);
@@ -69,7 +70,13 @@ class Request {
             : [];
     }
     get ip() {
-        return this.ips[0] || this.req.socket.remoteAddress || '';
+        if (!this._ip) {
+            this._ip = this.ips[0] || this.req.socket.remoteAddress || '';
+        }
+        return this._ip;
+    }
+    set ip(value) {
+        this._ip = value;
     }
     get header() {
         return this.req.headers;

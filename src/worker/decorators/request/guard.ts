@@ -3,8 +3,9 @@ import 'reflect-metadata';
 import DecoratorNameSpace from '../namespace';
 import * as Compose from 'koa-compose';
 import Context from '../../context';
+import Plugin from '../../plugin';
 
-export default function Guarder(...args: Compose.Middleware<Context>[]): MethodDecorator {
+export default function Guarder<T extends Plugin>(...args: Compose.Middleware<Context<T>>[]): MethodDecorator {
   return (target, property, descriptor) => {
     let guards = Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_GUARD, descriptor.value);
     if (!guards) guards = [];

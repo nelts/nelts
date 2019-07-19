@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference types="accepts" />
 import { IncomingMessage, ServerResponse } from "http";
 import * as Cookies from 'cookies';
 import Plugin from './plugin';
@@ -15,21 +16,21 @@ export interface ContextError extends Error {
     status?: number;
     expose?: boolean;
 }
-export default class Context extends AsyncEventEmitter {
-    readonly app: Plugin;
+export default class Context<T extends Plugin> extends AsyncEventEmitter {
+    readonly app: T;
     readonly req: IncomingMessage;
     readonly res: ServerResponse;
     readonly params: ParamSchema;
     readonly cookies: Cookies;
-    readonly request: Request;
-    readonly response: Response;
+    readonly request: Request<T, Context<T>>;
+    readonly response: Response<T, Context<T>>;
     private _stacks;
     private _stackStatus;
     silent: boolean;
     state: Map<any, any>;
     respond: boolean;
     [label: string]: any;
-    constructor(app: Plugin, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
+    constructor(app: T, req: IncomingMessage, res: ServerResponse, params?: ParamSchema);
     throw(message: Error | string, code?: number): void;
     error(message: Error | string, code?: number): ContextError;
     readonly messager: import("../messager").default<import(".").default>;
@@ -46,16 +47,23 @@ export default class Context extends AsyncEventEmitter {
     set(field: string | fieldObjectSchema, val?: fieldValueSchema): void;
     get(field: string): string | string[];
     onerror(err: ContextError): void;
+    readonly accept: import("accepts").Accepts;
+    readonly url: string;
+    ip: string;
     body: any;
     status: number;
     readonly method: string;
     length: number;
     message: any;
     type: string;
+    lastModified: string | Date | number;
+    etag: string;
+    readonly headerSent: boolean;
     redirect(url: string, alt?: string): void;
     attachment(filename: string, options: any): void;
     is(types: string | string[]): string | false;
     append(field: string, val: any): void;
     flushHeaders(): void;
+    remove(value: string): void;
 }
 export {};

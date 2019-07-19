@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Controller {
+class Base {
     constructor(plugin) {
         this.app = plugin;
     }
@@ -20,4 +20,4 @@ class Controller {
         return this.messager.asyncHealth();
     }
 }
-exports.default = Controller;
+exports.default = Base;

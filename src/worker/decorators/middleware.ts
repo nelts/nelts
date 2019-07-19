@@ -3,8 +3,9 @@ import 'reflect-metadata';
 import DecoratorNameSpace from './namespace';
 import * as Compose from 'koa-compose';
 import Context from '../context';
+import Plugin from '../plugin';
 
-export default function Middleware(...args: Compose.Middleware<Context>[]): MethodDecorator {
+export default function Middleware< T extends Plugin>(...args: Compose.Middleware<Context<T>>[]): MethodDecorator {
   return (target, property, descriptor) => {
     let middlewares = Reflect.getMetadata(DecoratorNameSpace.CONTROLLER_MIDDLEWARE, descriptor.value);
     if (!middlewares) middlewares = [];

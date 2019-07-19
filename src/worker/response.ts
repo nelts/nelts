@@ -11,18 +11,19 @@ import { ContextError } from './context';
 import { extname } from 'path';
 import * as contentDisposition from 'content-disposition';
 import { is as typeis } from 'type-is';
+import Plugin from './plugin';
 
 export type fieldValueSchema = string | number | string[];
 export type fieldObjectSchema = { [name: string]: fieldValueSchema };
 
-export default class Response {
-  readonly ctx: Context;
+export default class Response<M extends Plugin, T extends Context<M>> {
+  readonly ctx: T;
   readonly res: ServerResponse;
   private _body: any;
   private _explicitStatus: boolean;
   [name: string]: any;
   
-  constructor(ctx: Context, res: ServerResponse) {
+  constructor(ctx: T, res: ServerResponse) {
     this.res = res;
     this.ctx = ctx;
   }
