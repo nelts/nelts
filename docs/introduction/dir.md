@@ -6,8 +6,8 @@
 
 ## 根目录
 
+- `dist/` 最终编译文件目录
 - `src/` 插件源文件目录
-- `nelts.config.js` 插件参数配置文件
 - `logger.js` 日志配置文件
 - `.gitignore`
 - `package-lock.json`
@@ -50,6 +50,7 @@ type plugin = {
 
 一般，它具有以下的目录结构
 
+- `src/nelts.config.ts` 配置文件
 - `src/controller` Controller层文件存放处。该目录下的文件将被自动loader后注入路由到服务中。
 - `src/middleware` Middleware层文件存放处。该目录下的文件将自动loader后注入到插件对象上。
 - `src/service` Service层文件存放处。该目录下文件将自动loader后注入到插件对象上。

@@ -6,6 +6,8 @@ export default class Master extends Component {
     private _max;
     private _config;
     private _port;
+    private _socket;
+    private _sticky;
     private _messager;
     private _forker;
     readonly messager: Messager<Master>;
@@ -21,4 +23,5 @@ export default class Master extends Component {
     componentReceiveMessage(message: ProcessMessageReceiveDataType, socket?: any): void;
     private masterMessageConvert;
     private createReply;
+    private createSocketInterceptor;
 }

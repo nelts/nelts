@@ -4,6 +4,7 @@
 
 ```bash
 $ npm i -g pm2
+$ pm2 install pm2-intercom
 $ npm i -g @nelts/cli
 ```
 

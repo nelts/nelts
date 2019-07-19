@@ -5,21 +5,18 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = require("os");
 const fs = require("fs");
+const net = require("net");
 const path = require("path");
+const sticky_blalance_1 = require("./helper/sticky-blalance");
 const process_1 = require("@nelts/process");
 const messager_1 = require("./messager");
 __export(require("./export"));
 const workScriptFilename = path.resolve(__dirname, './worker/index');
 const agentScriptFilename = path.resolve(__dirname, './agent/index');
 class Master extends process_1.Component {
-    get messager() {
-        return this._messager;
-    }
-    get logger() {
-        return this.processer.logger;
-    }
     constructor(processer, args) {
         super(processer, args);
+        this._sticky = 'sticky:balance';
         const base = args.base ? path.resolve(args.base || '.') : args.cwd;
         const max = Number(args.max || os.cpus().length);
         if (!fs.existsSync(base))
@@ -27,8 +24,15 @@ class Master extends process_1.Component {
         this._base = base;
         this._port = Number(args.port || 8080);
         this._config = args.config;
+        this._socket = !!args.socket;
         this._max = max;
         this._messager = new messager_1.default(this, args.mpid);
+    }
+    get messager() {
+        return this._messager;
+    }
+    get logger() {
+        return this.processer.logger;
     }
     async health() {
         const agents = Object.keys(this.processer.agents);
@@ -48,7 +52,15 @@ class Master extends process_1.Component {
         });
     }
     async componentWillCreate() {
-        this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
+        if (this._socket)
+            await this.createSocketInterceptor();
+        this._forker = this.createWorkerForker(workScriptFilename, {
+            base: this._base,
+            config: this._config,
+            port: this._port,
+            socket: this._socket,
+            sticky: this._sticky,
+        });
     }
     async componentDidCreated() {
         for (let i = 0; i < this._max; i++) {
@@ -134,6 +146,25 @@ class Master extends process_1.Component {
                 code: data.code,
             }, socket);
         };
+    }
+    createSocketInterceptor() {
+        return new Promise((resolve, reject) => {
+            const server = net.createServer({ pauseOnConnect: true }, (socket) => {
+                if (!socket.remoteAddress)
+                    return socket.destroy();
+                const hash = sticky_blalance_1.default(socket.remoteAddress);
+                const worker = this.processer.workers[hash % this.processer.workers.length];
+                if (!worker)
+                    return socket.destroy();
+                worker.send(this._sticky, socket);
+            });
+            server.listen(this._port, (err) => {
+                if (err)
+                    return reject(err);
+                this.logger.info('[master] start socket server interceptor on', this._port);
+                resolve();
+            });
+        });
     }
 }
 exports.default = Master;

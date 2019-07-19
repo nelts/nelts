@@ -1,3 +1,4 @@
+import * as net from 'net';
 import * as http from 'http';
 import { MakeWorkerPluginRender } from '../helper/plugin-render';
 import * as Router from 'find-my-way';
@@ -20,6 +21,8 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   private _port: number;
   private _middlewares: Middleware[];
   private _handler: ComposedMiddleware;
+  private _socket: boolean;
+  private _sticky: string;
   public server: http.Server;
   public render: (path: string) => Promise<WorkerPlugin>;
   public router: Router.Instance<Router.HTTPVersion.V1>;
@@ -28,6 +31,8 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   constructor(processer: Processer, args: { [name:string]: any }) {
     super(processer, args);
     this.logger.info(`[pid:${process.pid}] server opening...`);
+    this._socket = args.socket;
+    this._sticky = args.sticky;
     this._port = Number(args.port || 8080);
     this._middlewares = [];
     this.messager = new Messager<WorkerComponent>(this, args.mpid);
@@ -38,6 +43,13 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
         res.end();
       }
     });
+    if (this._socket) {
+      process.on('message', (message: any, socket: net.Socket) => {
+        switch (message) {
+          case this._sticky: this.resumeConnection(socket); break;
+        }
+      });
+    }
   }
 
   use(...args: Middleware[]) {
@@ -47,6 +59,12 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
 
   get app() {
     return this._app;
+  }
+
+  private resumeConnection(socket: net.Socket) {
+    if (!this.server) return socket.destroy();
+    this.server.emit('connection', socket);
+    socket.resume();
   }
 
   async componentWillCreate() {

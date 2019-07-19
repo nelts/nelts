@@ -11,6 +11,8 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     private _port;
     private _middlewares;
     private _handler;
+    private _socket;
+    private _sticky;
     server: http.Server;
     render: (path: string) => Promise<WorkerPlugin>;
     router: Router.Instance<Router.HTTPVersion.V1>;
@@ -20,6 +22,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
     });
     use(...args: Middleware[]): this;
     readonly app: WorkerPlugin;
+    private resumeConnection;
     componentWillCreate(): Promise<void>;
     componentDidCreated(): Promise<void>;
     componentWillDestroy(): Promise<void>;

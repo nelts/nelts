@@ -1,6 +1,8 @@
 import * as os from 'os';
 import * as fs from 'fs';
+import * as net from 'net';
 import * as path from 'path';
+import stickyBalance from './helper/sticky-blalance';
 import { Component, Processer } from '@nelts/process';
 import Messager, { ProcessMessageReceiveDataType } from './messager';
 export * from './export';
@@ -13,6 +15,8 @@ export default class Master extends Component {
   private _max: number;
   private _config: string;
   private _port: number;
+  private _socket: boolean;
+  private _sticky: string = 'sticky:balance';
   private _messager: Messager<Master>;
   private _forker: () => Promise<any>;
 
@@ -32,6 +36,7 @@ export default class Master extends Component {
     this._base = base;
     this._port = Number(args.port || 8080);
     this._config = args.config;
+    this._socket = !!args.socket;
     this._max = max;
     this._messager = new Messager<Master>(this, args.mpid);
   }
@@ -56,7 +61,14 @@ export default class Master extends Component {
   }
 
   async componentWillCreate() {
-    this._forker = this.createWorkerForker(workScriptFilename, { base: this._base, config: this._config, port: this._port });
+    if (this._socket) await this.createSocketInterceptor();
+    this._forker = this.createWorkerForker(workScriptFilename, { 
+      base: this._base, 
+      config: this._config, 
+      port: this._port, 
+      socket: this._socket,
+      sticky: this._sticky, 
+    });
   }
 
   async componentDidCreated() {
@@ -141,5 +153,22 @@ export default class Master extends Component {
         code: data.code,
       }, socket);
     }
+  }
+
+  private createSocketInterceptor() {
+    return new Promise((resolve, reject) => {
+      const server = net.createServer({ pauseOnConnect: true }, (socket: net.Socket) => {
+        if (!socket.remoteAddress) return socket.destroy();
+        const hash = stickyBalance(socket.remoteAddress);
+        const worker = this.processer.workers[hash % this.processer.workers.length];
+        if (!worker) return socket.destroy();
+        worker.send(this._sticky, socket);
+      });
+      server.listen(this._port, (err?: Error) => {
+        if (err) return reject(err);
+        this.logger.info('[master] start socket server interceptor on', this._port);
+        resolve();
+      })
+    })
   }
 }

@@ -15,6 +15,8 @@ class WorkerComponent extends factory_1.default {
     constructor(processer, args) {
         super(processer, args);
         this.logger.info(`[pid:${process.pid}] server opening...`);
+        this._socket = args.socket;
+        this._sticky = args.sticky;
         this._port = Number(args.port || 8080);
         this._middlewares = [];
         this.messager = new messager_1.default(this, args.mpid);
@@ -25,6 +27,15 @@ class WorkerComponent extends factory_1.default {
                 res.end();
             }
         });
+        if (this._socket) {
+            process.on('message', (message, socket) => {
+                switch (message) {
+                    case this._sticky:
+                        this.resumeConnection(socket);
+                        break;
+                }
+            });
+        }
     }
     use(...args) {
         this._middlewares.push(...args);
@@ -32,6 +43,12 @@ class WorkerComponent extends factory_1.default {
     }
     get app() {
         return this._app;
+    }
+    resumeConnection(socket) {
+        if (!this.server)
+            return socket.destroy();
+        this.server.emit('connection', socket);
+        socket.resume();
     }
     async componentWillCreate() {
         this.render = plugin_render_1.MakeWorkerPluginRender(this);
