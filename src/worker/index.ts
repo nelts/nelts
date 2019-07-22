@@ -127,7 +127,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
         switch (message.method) {
           case '__master:done__': 
             if (message.id !== -1) throw new Error('id is invaild on master:ready lifecycle');
-            this._app.broadcast('ready').catch(e => this.logger.error(e)); 
+            this._app.broadcast('ready').catch(e => this.logger.error(e)).then(() => this.logger.info('All success!')); 
             break;
           case '__master:notice__':
             this.logger.info('worker', process.pid, 'receive __master:notice__ from master and broadcast to plugins');

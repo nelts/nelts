@@ -11,7 +11,7 @@ import Response, { fieldObjectSchema, fieldValueSchema } from './response';
 import AsyncEventEmitter from '../helper/events';
 import { ContextError } from './context';
 import { ProcessMessageSendOptions } from '../messager';
-declare type StackCallback = () => PromiseLike<void>;
+declare type StackCallback = () => Promise<any>;
 export interface ContextError extends Error {
     status?: number;
     expose?: boolean;

@@ -9,7 +9,7 @@ import AsyncEventEmitter from '../helper/events';
 import { ContextError } from './context';
 import { ProcessMessageSendOptions } from '../messager';
 
-type StackCallback = () => PromiseLike<void>;
+type StackCallback = () => Promise<any>;
 type StackStatus = 0 | 1 | 2;
 
 export interface ContextError extends Error {
