@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as net from 'net';
 import * as path from 'path';
 import stickyBalance from './helper/sticky-blalance';
-import { Component, Processer } from '@nelts/process';
+import { Component, Processer, Node } from '@nelts/process';
 import Messager, { ProcessMessageReceiveDataType } from './messager';
 export * from './export';
 const workScriptFilename = path.resolve(__dirname, './worker/index');
@@ -126,7 +126,7 @@ export default class Master extends Component {
             name: message.data.name,
             mpid: this.messager.mpid,
           }))
-          .then(() => reply({ code: 0, time: Date.now() - startCreateAgentTime }))
+          .then((node: Node) => reply({ code: 0, time: Date.now() - startCreateAgentTime, pid: node.pid }))
           .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
         }
         break;
