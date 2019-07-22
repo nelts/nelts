@@ -119,7 +119,7 @@ class Master extends process_1.Component {
                         name: message.data.name,
                         mpid: this.messager.mpid,
                     }))
-                        .then(() => reply({ code: 0, time: Date.now() - startCreateAgentTime }))
+                        .then((node) => reply({ code: 0, time: Date.now() - startCreateAgentTime, pid: node.pid }))
                         .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
                 }
                 break;
