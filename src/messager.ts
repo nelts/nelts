@@ -75,7 +75,7 @@ export default class Messager<T extends Component> {
     return _id;
   }
 
-  asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions) {
+  asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<any> {
     return new Promise((resolve, reject) => {
       const _id = this.send(method, data, options);
       const timeout = typeof options === 'object' ? options.timeout : 20000;

@@ -7,8 +7,8 @@ export default class Agent {
     readonly logger: import("log4js").Logger;
     readonly messager: import("../../messager").default<AgentAppplication>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
-    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
-    asyncHealth(): Promise<unknown>;
+    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<any>;
+    asyncHealth(): Promise<any>;
     kill(): void;
     notice(type: string, data: any): void;
 }

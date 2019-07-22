@@ -20,9 +20,9 @@ export default class Messager<T extends Component> {
     private _stacks;
     constructor(app: T, mpid: number);
     parse(id: number, code: ipcStatus, data: any): void;
-    createAgent(name: any, file: string, args?: any): Promise<unknown>;
+    createAgent(name: any, file: string, args?: any): Promise<any>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
-    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
-    asyncHealth(): Promise<unknown>;
+    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<any>;
+    asyncHealth(): Promise<any>;
 }
 export {};

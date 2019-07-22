@@ -35,8 +35,8 @@ export default class Context<T extends Plugin> extends AsyncEventEmitter {
     error(message: Error | string, code?: number): ContextError;
     readonly messager: import("../messager").default<import(".").default>;
     send(method: string, data?: any, options?: ProcessMessageSendOptions): number;
-    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<unknown>;
-    asyncHealth(): Promise<unknown>;
+    asyncSend(method: string, data?: any, options?: ProcessMessageSendOptions): Promise<any>;
+    asyncHealth(): Promise<any>;
     stash(fn: StackCallback): this;
     commit(): Promise<void>;
     rollback(e: ContextError): Promise<void>;
