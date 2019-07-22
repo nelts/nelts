@@ -45,7 +45,10 @@ export default class Master extends Component {
     const agents = Object.keys(this.processer.agents);
     const datas = await Promise.all(agents.map(agent => this._messager.asyncSend('health', null, agent)));
     const result: { [name: string]: any } = {};
-    datas.forEach((data, index) => result[agents[index]] = data);
+    datas.forEach((data, index) => {
+      result[agents[index]] = data || {};
+      result[agents[index]].pid = this.processer.agents[agents[index]].pid;
+    });
     return result;
   }
 
@@ -116,7 +119,7 @@ export default class Master extends Component {
     switch (message.method) {
       case 'newAgent':
         if (this.processer.agents[message.data.name]) {
-          reply({ code: 0, time: 0 });
+          reply({ code: 0, time: 0, data: this.processer.agents[message.data.name].pid });
         } else {
           const startCreateAgentTime = Date.now();
           this.createAgent(message.data.name, agentScriptFilename, Object.assign(message.data.args || {}, {
@@ -126,7 +129,7 @@ export default class Master extends Component {
             name: message.data.name,
             mpid: this.messager.mpid,
           }))
-          .then((node: Node) => reply({ code: 0, time: Date.now() - startCreateAgentTime, pid: node.pid }))
+          .then((node: Node) => reply({ code: 0, time: Date.now() - startCreateAgentTime, data: node.pid }))
           .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
         }
         break;
