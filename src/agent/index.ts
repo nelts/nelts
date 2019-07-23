@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Processer } from '@nelts/process';
-import Factory from '../factory';
+import Factory, { InCommingMessage } from '../factory';
 import AgentPlugin from './plugin';
 import Require from '../helper/require';
 import Agentbase from './components/base';
@@ -17,7 +17,7 @@ export default class AgentComponent extends Factory<AgentPlugin> {
   public messager: Messager<AgentComponent>;
   private _targetConstructor: any;
   public render: (path: string) => Promise<AgentPlugin>;
-  constructor(processer: Processer, args: { [name:string]: any }) {
+  constructor(processer: Processer, args: InCommingMessage) {
     const target = Require<{ new(app: AgentComponent): Agentbase }>(args.file);
     super(processer, args);
     this._targetConstructor = target;

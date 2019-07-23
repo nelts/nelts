@@ -12,9 +12,13 @@ class Factory extends process_1.Component {
         this.compiler = new compiler_1.default();
         this._base = args.base ? path.resolve(args.base || '.') : args.cwd;
         this._env = args.env;
+        this._inCommingMessage = args;
         if (args.config) {
             this._configs = require_1.default(args.config, this._base);
         }
+    }
+    get inCommingMessage() {
+        return this._inCommingMessage;
     }
     get logger() {
         return this.processer.logger;

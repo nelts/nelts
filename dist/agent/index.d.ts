@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Processer } from '@nelts/process';
-import Factory from '../factory';
+import Factory, { InCommingMessage } from '../factory';
 import AgentPlugin from './plugin';
 import Messager, { ProcessMessageReceiveDataType } from '../messager';
 export default class AgentComponent extends Factory<AgentPlugin> {
@@ -10,9 +10,7 @@ export default class AgentComponent extends Factory<AgentPlugin> {
     messager: Messager<AgentComponent>;
     private _targetConstructor;
     render: (path: string) => Promise<AgentPlugin>;
-    constructor(processer: Processer, args: {
-        [name: string]: any;
-    });
+    constructor(processer: Processer, args: InCommingMessage);
     componentWillCreate(): Promise<void>;
     componentDidCreated(): Promise<void>;
     componentWillDestroy(): Promise<void>;

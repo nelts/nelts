@@ -7,7 +7,7 @@ import Compose, { Middleware, ComposedMiddleware } from '../helper/request-respo
 import { ContextError } from './context';
 import Messager, { ProcessMessageReceiveDataType } from '../messager';
 
-import Factory from '../factory';
+import Factory, { InCommingMessage } from '../factory';
 import WorkerPlugin from './plugin';
 
 import BootstrapCompiler from './compilers/bootstrap';
@@ -28,7 +28,7 @@ export default class WorkerComponent extends Factory<WorkerPlugin> {
   public router: Router.Instance<Router.HTTPVersion.V1>;
   public messager: Messager<WorkerComponent>;
 
-  constructor(processer: Processer, args: { [name:string]: any }) {
+  constructor(processer: Processer, args: InCommingMessage) {
     super(processer, args);
     this.logger.info(`[pid:${process.pid}] server opening...`);
     this._socket = args.socket;
