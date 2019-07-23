@@ -45,7 +45,12 @@ class AgentComponent extends factory_1.default {
         const name = message.to;
         const pid = process.pid;
         if (name === this._name || name === pid) {
-            if (message.method === 'health') {
+            if (message.method === 'ready') {
+                if (this._target.ready) {
+                    this._target.ready();
+                }
+            }
+            else if (message.method === 'health') {
                 const healthTime = new Date();
                 if (!this._target.health) {
                     process.send({

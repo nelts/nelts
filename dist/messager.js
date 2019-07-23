@@ -15,7 +15,7 @@ class Messager {
             callback(data);
         }
     }
-    createAgent(name, file, args) {
+    async createAgent(name, file, args) {
         if (!file && typeof name !== 'string') {
             if (!name.__filename || !name.__filepath)
                 throw new Error('create agent should provide filename and filepath');
@@ -25,9 +25,11 @@ class Messager {
                 args
             });
         }
-        return this.asyncSend('newAgent', {
+        const data = await this.asyncSend('newAgent', {
             name, file, args
         });
+        this.send('ready', null, name);
+        return data;
     }
     send(method, data, options) {
         if (!options)

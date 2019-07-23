@@ -31,7 +31,7 @@ export default class Messager<T extends Component> {
     }
   }
 
-  createAgent(name: any, file: string, args?: any) {
+  async createAgent(name: any, file: string, args?: any) {
     if (!file && typeof name !== 'string') {
       if (!name.__filename || !name.__filepath) throw new Error('create agent should provide filename and filepath');
       return this.asyncSend('newAgent', {
@@ -40,9 +40,11 @@ export default class Messager<T extends Component> {
         args
       });
     }
-    return this.asyncSend('newAgent', {
+    const data = await this.asyncSend('newAgent', {
       name, file, args
     });
+    this.send('ready', null, name);
+    return data;
   }
 
   send(method: string, data?: any, options?: ProcessMessageSendOptions) {
