@@ -123,7 +123,11 @@ class Master extends process_1.Component {
                         mpid: this.messager.mpid,
                     }))
                         .then((node) => reply({ code: 0, time: Date.now() - startCreateAgentTime, data: node.pid }))
-                        .catch(e => reply({ code: 1, message: e.message, time: Date.now() - startCreateAgentTime }));
+                        .catch(e => reply({
+                        code: 1,
+                        message: (e && e.message) || `Agnet[${message.data.name}] start catch error on runtime, please see logs.`,
+                        time: Date.now() - startCreateAgentTime
+                    }));
                 }
                 break;
             case 'health':
