@@ -1,7 +1,14 @@
-import { Component, Processer } from '@nelts/process';
+import { Component, Processer, ProcessArgvType, WidgetComponent } from '@nelts/process';
 import Messager, { ProcessMessageReceiveDataType } from './messager';
 export * from './export';
-export default class Master extends Component {
+interface MasterProcessArgvType extends ProcessArgvType {
+    base?: string;
+    max?: number;
+    port?: number;
+    config?: string;
+    socket?: boolean;
+}
+export default class Master extends Component implements WidgetComponent {
     private _base;
     private _max;
     private _config;
@@ -12,9 +19,7 @@ export default class Master extends Component {
     private _forker;
     readonly messager: Messager<Master>;
     readonly logger: import("log4js").Logger;
-    constructor(processer: Processer, args: {
-        [name: string]: any;
-    });
+    constructor(processer: Processer, args: MasterProcessArgvType);
     private health;
     private notice;
     componentWillCreate(): Promise<void>;

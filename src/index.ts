@@ -3,13 +3,21 @@ import * as fs from 'fs';
 import * as net from 'net';
 import * as path from 'path';
 import stickyBalance from './helper/sticky-blalance';
-import { Component, Processer, Node } from '@nelts/process';
+import { Component, Processer, Node, ProcessArgvType, WidgetComponent } from '@nelts/process';
 import Messager, { ProcessMessageReceiveDataType } from './messager';
 export * from './export';
 const workScriptFilename = path.resolve(__dirname, './worker/index');
 const agentScriptFilename = path.resolve(__dirname, './agent/index');
 
-export default class Master extends Component {
+interface MasterProcessArgvType extends ProcessArgvType {
+  base?: string,
+  max?: number,
+  port?: number,
+  config?: string,
+  socket?: boolean,
+}
+
+export default class Master extends Component implements WidgetComponent {
 
   private _base: string;
   private _max: number;
@@ -28,7 +36,7 @@ export default class Master extends Component {
     return this.processer.logger;
   }
 
-  constructor(processer: Processer, args: { [name:string]: any }) {
+  constructor(processer: Processer, args: MasterProcessArgvType) {
     super(processer, args);
     const base = args.base ? path.resolve(args.base || '.') : args.cwd;
     const max = Number(args.max || os.cpus().length);

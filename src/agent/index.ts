@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Processer } from '@nelts/process';
+import { Processer, WidgetComponent } from '@nelts/process';
 import Factory, { InCommingMessage } from '../factory';
 import AgentPlugin from './plugin';
 import Require from '../helper/require';
@@ -10,7 +10,7 @@ import DecoratorNameSpace from './decorators/namespace';
 
 import BootstrapCompiler from './compilers/bootstrap';
 
-export default class AgentComponent extends Factory<AgentPlugin> {
+export default class AgentComponent extends Factory<AgentPlugin> implements WidgetComponent {
   private _target: Agentbase;
   private _app: AgentPlugin;
   private _name: string;

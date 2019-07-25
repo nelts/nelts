@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { Processer } from '@nelts/process';
+import { Processer, WidgetComponent } from '@nelts/process';
 import Factory, { InCommingMessage } from '../factory';
 import AgentPlugin from './plugin';
 import Messager, { ProcessMessageReceiveDataType } from '../messager';
-export default class AgentComponent extends Factory<AgentPlugin> {
+export default class AgentComponent extends Factory<AgentPlugin> implements WidgetComponent {
     private _target;
     private _app;
     private _name;

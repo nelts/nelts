@@ -1,12 +1,12 @@
 /// <reference types="node" />
 import * as http from 'http';
 import * as Router from 'find-my-way';
-import { Processer } from '@nelts/process';
+import { Processer, WidgetComponent } from '@nelts/process';
 import { Middleware } from '../helper/request-response-compose';
 import Messager, { ProcessMessageReceiveDataType } from '../messager';
 import Factory, { InCommingMessage } from '../factory';
 import WorkerPlugin from './plugin';
-export default class WorkerComponent extends Factory<WorkerPlugin> {
+export default class WorkerComponent extends Factory<WorkerPlugin> implements WidgetComponent {
     private _app;
     private _port;
     private _middlewares;

@@ -1,7 +1,7 @@
-import { Component, Processer } from '@nelts/process';
+import { Component, Processer, ProcessArgvType } from '@nelts/process';
 import { NELTS_CONFIGS } from './export';
 import Compiler from './compiler';
-export declare type InCommingMessage = {
+export interface InCommingMessage extends ProcessArgvType {
     base: string;
     env: string;
     config?: string;
@@ -9,7 +9,7 @@ export declare type InCommingMessage = {
     script: string;
     kind: number;
     [name: string]: any;
-};
+}
 export default class Factory<T> extends Component {
     private _base;
     private _env;

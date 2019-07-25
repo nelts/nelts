@@ -2,7 +2,7 @@ import * as net from 'net';
 import * as http from 'http';
 import { MakeWorkerPluginRender } from '../helper/plugin-render';
 import * as Router from 'find-my-way';
-import { Processer } from '@nelts/process';
+import { Processer, WidgetComponent } from '@nelts/process';
 import Compose, { Middleware, ComposedMiddleware } from '../helper/request-response-compose';
 import { ContextError } from './context';
 import Messager, { ProcessMessageReceiveDataType } from '../messager';
@@ -16,7 +16,7 @@ import MiddlewareCompiler from './compilers/middleware';
 import ServiceCompiler from './compilers/service';
 import AgentCompiler from './compilers/agent';
 
-export default class WorkerComponent extends Factory<WorkerPlugin> {
+export default class WorkerComponent extends Factory<WorkerPlugin> implements WidgetComponent {
   private _app: WorkerPlugin;
   private _port: number;
   private _middlewares: Middleware[];

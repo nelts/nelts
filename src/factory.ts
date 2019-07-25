@@ -1,10 +1,10 @@
 import * as path from 'path';
-import { Component, Processer } from '@nelts/process';
+import { Component, Processer, ProcessArgvType } from '@nelts/process';
 import { NELTS_CONFIGS } from './export';
 import Require from './helper/require';
 import Compiler from './compiler';
 
-export type InCommingMessage = {
+export interface InCommingMessage extends ProcessArgvType {
   base: string,
   env: string,
   config?: string,
