@@ -7,8 +7,9 @@ import Agentbase from './components/base';
 import { MakeAgentPluginRender } from '../helper/plugin-render';
 import Messager, { ProcessMessageReceiveDataType } from '../messager';
 import DecoratorNameSpace from './decorators/namespace';
-
 import BootstrapCompiler from './compilers/bootstrap';
+import { CronJob } from 'cron';
+import { ScheduleDecoratorType } from './decorators/schedule';
 
 export default class AgentComponent extends Factory<AgentPlugin> implements WidgetComponent {
   private _target: Agentbase;
@@ -36,6 +37,20 @@ export default class AgentComponent extends Factory<AgentPlugin> implements Widg
   async componentDidCreated() {
     await this.compiler.run();
     if (this.configs) await this._app.props(this.configs);
+    const targetProperties = Object.getOwnPropertyNames(this._targetConstructor.prototype);
+    for (let i = 0; i < targetProperties.length; i++) {
+      const property = targetProperties[i];
+      const target = this._targetConstructor.prototype[property];
+      if (property === 'constructor') continue;
+      const schedule: ScheduleDecoratorType = Reflect.getMetadata(DecoratorNameSpace.SCHEDULE, target);
+      if (schedule) {
+        const job = new CronJob(schedule.cron, () => {
+          if (this._target[property]) {
+            this._target[property](job);
+          }
+        }, undefined, true, undefined, undefined, schedule.runOnInit);
+      }
+    }
     this._target.created && await this._target.created();
     await this._app.emit('AgentStarted');
   }

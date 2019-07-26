@@ -7,6 +7,7 @@ const plugin_render_1 = require("../helper/plugin-render");
 const messager_1 = require("../messager");
 const namespace_1 = require("./decorators/namespace");
 const bootstrap_1 = require("./compilers/bootstrap");
+const cron_1 = require("cron");
 class AgentComponent extends factory_1.default {
     constructor(processer, args) {
         const target = require_1.default(args.file);
@@ -26,6 +27,21 @@ class AgentComponent extends factory_1.default {
         await this.compiler.run();
         if (this.configs)
             await this._app.props(this.configs);
+        const targetProperties = Object.getOwnPropertyNames(this._targetConstructor.prototype);
+        for (let i = 0; i < targetProperties.length; i++) {
+            const property = targetProperties[i];
+            const target = this._targetConstructor.prototype[property];
+            if (property === 'constructor')
+                continue;
+            const schedule = Reflect.getMetadata(namespace_1.default.SCHEDULE, target);
+            if (schedule) {
+                const job = new cron_1.CronJob(schedule.cron, () => {
+                    if (this._target[property]) {
+                        this._target[property](job);
+                    }
+                }, undefined, true, undefined, undefined, schedule.runOnInit);
+            }
+        }
         this._target.created && await this._target.created();
         await this._app.emit('AgentStarted');
     }
