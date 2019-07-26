@@ -78,6 +78,7 @@ declare const Decorator: {
     Ipc: MethodDecorator;
     Feedback: MethodDecorator;
     Auto: ClassDecorator;
+    Schedule: (cron: string | Date | import("moment").Moment, runOnInit?: boolean) => MethodDecorator;
 };
 declare const Extra: {
     JSON_SCHEMA: typeof JSON_SCHEMA;

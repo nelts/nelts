@@ -33,6 +33,7 @@ const response_1 = require("./worker/decorators/response");
 const ipc_1 = require("./agent/decorators/ipc");
 const feedback_1 = require("./agent/decorators/feedback");
 const auto_1 = require("./agent/decorators/auto");
+const schedule_1 = require("./agent/decorators/schedule");
 const lru_1 = require("./helper/lru");
 exports.LRU = lru_1.default;
 const events_1 = require("./helper/events");
@@ -89,7 +90,8 @@ const Decorator = {
     },
     Ipc: ipc_1.default,
     Feedback: feedback_1.default,
-    Auto: auto_1.default
+    Auto: auto_1.default,
+    Schedule: schedule_1.default,
 };
 exports.Decorator = Decorator;
 const Extra = {
