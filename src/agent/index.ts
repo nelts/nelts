@@ -10,6 +10,7 @@ import DecoratorNameSpace from './decorators/namespace';
 import BootstrapCompiler from './compilers/bootstrap';
 import { CronJob } from 'cron';
 import { ScheduleDecoratorType } from './decorators/schedule';
+import { RunFunctionalResult } from '../export';
 
 export default class AgentComponent extends Factory<AgentPlugin> implements WidgetComponent {
   private _target: Agentbase;
@@ -46,7 +47,9 @@ export default class AgentComponent extends Factory<AgentPlugin> implements Widg
       if (schedule) {
         const job = new CronJob(schedule.cron, () => {
           if (this._target[property]) {
-            this._target[property](job);
+            RunFunctionalResult(this._target[property](job)).then(result => {
+              if (result === true) job.stop();
+            }).catch(e => this.logger.error(e));
           }
         }, undefined, true, undefined, undefined, schedule.runOnInit);
       }
@@ -123,38 +126,18 @@ export default class AgentComponent extends Factory<AgentPlugin> implements Widg
   }
 
   private _sendValue(result: any, message:ProcessMessageReceiveDataType, callback?: (value: any) => any) {
-    if (Object.prototype.toString.call(result) === '[object Promise]') {
-      (<Promise<any>>result).then(value => process.send({
-        id: message.id,
-        to: message.from,
-        from: process.pid,
-        data: callback ? callback(value) : value,
-        code: 0
-      })).catch(e => process.send({
-        id: message.id,
-        to: message.from,
-        from: process.pid,
-        data: e.message,
-        code: 1
-      }));
-    } else {
-      if (result instanceof Error) {
-        process.send({
-          id: message.id,
-          to: message.from,
-          from: process.pid,
-          data: result.message,
-          code: 1
-        });
-      } else {
-        process.send({
-          id: message.id,
-          to: message.from,
-          from: process.pid,
-          data: callback ? callback(result) : result,
-          code: 0
-        });
-      }
-    }
+    RunFunctionalResult(result).then(value => process.send({
+      id: message.id,
+      to: message.from,
+      from: process.pid,
+      data: callback ? callback(value) : value,
+      code: 0
+    })).catch(e => process.send({
+      id: message.id,
+      to: message.from,
+      from: process.pid,
+      data: e.message,
+      code: 1
+    }));
   }
 }

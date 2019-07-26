@@ -19,14 +19,14 @@ export default class Response<M extends Plugin, T extends Context<M>> {
     readonly app: M;
     readonly req: import("http").IncomingMessage;
     readonly request: import("./request").default<M, Context<M>>;
-    readonly header: import("http").OutgoingHttpHeaders;
-    readonly headers: import("http").OutgoingHttpHeaders;
+    readonly header: any;
+    readonly headers: any;
     status: number;
     message: any;
     type: string;
     length: any;
     body: any;
-    get(field: string): string | number | string[];
+    get(field: string): any;
     set(field: string | fieldObjectSchema, val?: fieldValueSchema): void;
     remove(field: string): void;
     redirect(url: string, alt?: string): void;

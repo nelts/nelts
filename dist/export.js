@@ -99,3 +99,12 @@ const Extra = {
     Body
 };
 exports.Extra = Extra;
+function RunFunctionalResult(target) {
+    try {
+        return Promise.resolve(target);
+    }
+    catch (e) {
+        return Promise.reject(e);
+    }
+}
+exports.RunFunctionalResult = RunFunctionalResult;

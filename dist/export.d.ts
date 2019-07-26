@@ -85,3 +85,4 @@ declare const Extra: {
     Body: typeof Body;
 };
 export { LRU, Scope, Extra, Require, Plugin, Context, Component, Decorator, AjvChecker, Middleware, AgentPlugin, UsedCompose, AjvFormatter, WorkerPlugin, ContextError, NextCallback, AgentApplciation, WorkerApplciation, AsyncEventEmitter, ComposedMiddleware, AsyncEventEmitterListener, };
+export declare function RunFunctionalResult(target: any): Promise<any>;

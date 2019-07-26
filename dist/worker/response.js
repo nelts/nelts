@@ -46,7 +46,12 @@ class Response {
         return this.ctx.request;
     }
     get header() {
-        return this.res.getHeaders();
+        if (this.request)
+            return this.request.headers;
+        const res = this.res;
+        return typeof res.getHeaders === 'function'
+            ? res.getHeaders()
+            : res._headers || {};
     }
     get headers() {
         return this.header;

@@ -8,6 +8,7 @@ const messager_1 = require("../messager");
 const namespace_1 = require("./decorators/namespace");
 const bootstrap_1 = require("./compilers/bootstrap");
 const cron_1 = require("cron");
+const export_1 = require("../export");
 class AgentComponent extends factory_1.default {
     constructor(processer, args) {
         const target = require_1.default(args.file);
@@ -37,7 +38,10 @@ class AgentComponent extends factory_1.default {
             if (schedule) {
                 const job = new cron_1.CronJob(schedule.cron, () => {
                     if (this._target[property]) {
-                        this._target[property](job);
+                        export_1.RunFunctionalResult(this._target[property](job)).then(result => {
+                            if (result === true)
+                                job.stop();
+                        }).catch(e => this.logger.error(e));
                     }
                 }, undefined, true, undefined, undefined, schedule.runOnInit);
             }
@@ -119,41 +123,19 @@ class AgentComponent extends factory_1.default {
         }
     }
     _sendValue(result, message, callback) {
-        if (Object.prototype.toString.call(result) === '[object Promise]') {
-            result.then(value => process.send({
-                id: message.id,
-                to: message.from,
-                from: process.pid,
-                data: callback ? callback(value) : value,
-                code: 0
-            })).catch(e => process.send({
-                id: message.id,
-                to: message.from,
-                from: process.pid,
-                data: e.message,
-                code: 1
-            }));
-        }
-        else {
-            if (result instanceof Error) {
-                process.send({
-                    id: message.id,
-                    to: message.from,
-                    from: process.pid,
-                    data: result.message,
-                    code: 1
-                });
-            }
-            else {
-                process.send({
-                    id: message.id,
-                    to: message.from,
-                    from: process.pid,
-                    data: callback ? callback(result) : result,
-                    code: 0
-                });
-            }
-        }
+        export_1.RunFunctionalResult(result).then(value => process.send({
+            id: message.id,
+            to: message.from,
+            from: process.pid,
+            data: callback ? callback(value) : value,
+            code: 0
+        })).catch(e => process.send({
+            id: message.id,
+            to: message.from,
+            from: process.pid,
+            data: e.message,
+            code: 1
+        }));
     }
 }
 exports.default = AgentComponent;

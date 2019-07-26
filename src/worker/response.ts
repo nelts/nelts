@@ -64,7 +64,11 @@ export default class Response<M extends Plugin, T extends Context<M>> {
   }
 
   get header() {
-    return this.res.getHeaders();
+    if (this.request) return this.request.headers;
+    const res = this.res;
+    return typeof res.getHeaders === 'function'
+      ? res.getHeaders()
+      : (<any>res)._headers || {};
   }
 
   get headers() {
