@@ -36,7 +36,7 @@
     "findup-sync": "^3.0.0",
     "globby": "^9.2.0",
     "koa-compose": "^4.1.0",
-    "merge": "^1.2.1",
+    "merge": "^2.1.1",
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
     "on-finished": "^2.3.0",
